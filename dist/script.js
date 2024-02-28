@@ -1,18 +1,20 @@
 const textOverlay = document.getElementById('text-overlay');
 const texts = [
-    "Even super cool Ninjas suffer from erection problems sometimes.",
+   
     "The future is now baby.",
     "How are you today?",
+  "You are taking things way to serious.",
     "Are you scared of robots?",
-  "I find inspiration in the dark",
-  "Be nice to the nice",
+  "I find inspiration in the dark.",
+  "Be nice to the nice.",
+   "Even super cool Ninjas suffer from erection problems sometimes.",
   "If you can't convince them, confuse them.",
-  "You look stupid in that outfit",
+  "You look stupid in that outfit.",
   "Im scared.",
-  "I love you.",
   "I hate orange candy.",
   "Prepare for an emotional rollercoaster.",
   "I still have no clue what im gonna do when I grow up.",
+   "I love you.",
   "Have you had enough water today?",
   
   
@@ -68,4 +70,26 @@ document.addEventListener('DOMContentLoaded', (event) => {
             audioControlButton.textContent = 'Play Audio';
         }
     });
+
+// Detect if the user is on an iOS device
+function isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.platform) ||
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+// Apply video and audio settings based on the OS
+function applyMediaSettings() {
+    const videoElement = document.getElementById('bg-video');
+  
+    if (isIOS()) {
+        // iOS-specific settings
+        videoElement.setAttribute('playsinline', ''); // Ensures inline playback
+        videoElement.muted = true; // Mute the video to allow autoplay on iOS
+    } else {
+        // Settings for non-iOS devices
+        videoElement.muted = false; // Unmute video for devices that allow autoplay with sound
+        // No need to change audio settings for non-iOS as it will autoplay based on your existing settings
+    }
+}
+
 });
