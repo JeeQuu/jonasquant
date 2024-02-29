@@ -32,7 +32,7 @@ body, html {
 
 #contactButton {
     position: absolute;
-    top: 60%; /* Center vertically */
+    top: 70%; /* Center vertically */
     left: 50%; /* Center horizontally */
     transform: translate(-50%, -1%);
     color: #fff; /* Text color */
@@ -41,7 +41,7 @@ body, html {
 
 #audioControl {
     position: absolute;
-    top: 20%; /* Center vertically */
+    top: 10%; /* Center vertically */
     left: 50%; /* Center horizontally */
     transform: translate(-50%, -1%);
     color: #fff; /* Text color */
