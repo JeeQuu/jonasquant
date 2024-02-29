@@ -54,7 +54,7 @@ body, html {
     left: 50%; /* Center horizontally */
     transform: translate(-50%, -50%);
     color: #fff; /* Text color */
-    font-size: 1.5em; /* Text size, adjust as needed */
+    font-size: 2em; /* Text size, adjust as needed */
     z-index: 1;
     opacity: 0; /* Start invisible */
     transition: opacity 1s ease-in-out; /* Smooth transition for opacity change */
@@ -64,7 +64,7 @@ body, html {
 }
 #signature {
     position: fixed;
-    bottom: 500px; /* Adjust the distance from the bottom as needed */
+    bottom: 50px; /* Adjust the distance from the bottom as needed */
     width: 100%;
     text-align: center;
     color: #fff; /* Adjust the color as needed */

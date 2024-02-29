@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "Save the world, please",
         "Imagine a world without tomatoes",
         "Be nice to the nice",
+    "Ai for president",
         "Grow up",
         "Even super cool ninjas cry sometimes",
         "If you can't convince them, confuse them",
@@ -46,26 +47,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initiateTextChange();
 
-    const backgroundMusic = document.getElementById('background-music');
     const audioControlImage = document.getElementById('audioControlImage');
-    const musicOnImg = "https://res.cloudinary.com/dakoxedxt/image/upload/v1709161330/MUSIC_koxx3m.png";
-    const musicOffImg = "https://res.cloudinary.com/dakoxedxt/image/upload/v1709161448/MUSIC_OFF_1_aabc8l.png";
+    const backgroundMusic = document.getElementById('background-music');
 
-    function toggleMusic() {
+    function toggleMusic(event) {
+        event.preventDefault(); // Added to prevent the default action
+        console.log("Toggle music clicked"); // For debugging
         if (backgroundMusic.paused || backgroundMusic.muted) {
             backgroundMusic.muted = false;
             backgroundMusic.play().then(() => {
-                audioControlImage.src = musicOnImg;
+                audioControlImage.src = "https://res.cloudinary.com/dakoxedxt/image/upload/v1709161330/MUSIC_koxx3m.png";
                 audioControlImage.alt = "Music On";
+                console.log("Music playing"); // For debugging
             }).catch(error => {
                 console.error('Audio playback failed:', error);
-                // Consider handling the error more gracefully here
             });
         } else {
             backgroundMusic.pause();
             backgroundMusic.muted = true;
-            audioControlImage.src = musicOffImg;
+            audioControlImage.src = "https://res.cloudinary.com/dakoxedxt/image/upload/v1709161448/MUSIC_OFF_1_aabc8l.png";
             audioControlImage.alt = "Music Off";
+            console.log("Music paused"); // For debugging
         }
     }
 
@@ -81,11 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isIOS()) {
         videoElement.setAttribute('playsinline', '');
         videoElement.muted = true; // Mute the video to allow autoplay on iOS
-        videoElement.src = "https://res.cloudinary.com/dakoxedxt/video/upload/v1709158796/STORYMODE1.mov";
+        videoElement.src = "https://res.cloudinary.com/dakoxedxt/video/upload/v1709158796/STORYMODE1.mov"; // iOS-specific video source
     } else {
-        videoElement.src = "https://res.cloudinary.com/dakoxedxt/video/upload/v1709158799/YOUTUBE.mov";
+        videoElement.src = "https://res.cloudinary.com/dakoxedxt/video/upload/v1709158799/YOUTUBE.mov"; // Default video source
     }
-    videoElement.load(); // Reload video element to apply new source
+    videoElement.load(); // Ensure the video element reloads to apply the new source if needed
 
     function sendEmail() {
         var user = "joel";
