@@ -80,6 +80,33 @@ document.addEventListener('DOMContentLoaded', () => {
             audioControlImage.alt = "Music Off";
         }
     });
+document.addEventListener('DOMContentLoaded', () => {
+    const backgroundMusic = document.getElementById('background-music');
+    const audioControlImage = document.getElementById('audioControlImage');
+
+    // Function to toggle music play/pause
+    function toggleMusic() {
+        if (backgroundMusic.paused || backgroundMusic.muted) {
+            backgroundMusic.muted = false;
+            backgroundMusic.play().then(() => {
+                audioControlImage.src = "https://res.cloudinary.com/dakoxedxt/image/upload/v1709161330/MUSIC_koxx3m.png";
+                audioControlImage.alt = "Music On";
+            }).catch(error => {
+                console.error('Audio playback failed:', error);
+            });
+        } else {
+            backgroundMusic.pause();
+            backgroundMusic.muted = true;
+            audioControlImage.src = "https://res.cloudinary.com/dakoxedxt/image/upload/v1709161448/MUSIC_OFF_1_aabc8l.png";
+            audioControlImage.alt = "Music Off";
+        }
+    }
+
+    // Add click event listener to the audio control
+    audioControlImage.addEventListener('click', toggleMusic);
+
+    // Other functionalities...
+});
 
     // Video Source Adjustment for iOS
     const videoElement = document.getElementById('bg-video');
