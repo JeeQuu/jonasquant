@@ -6,20 +6,26 @@ body, html {
 }
 
 #bg-video {
-    position: fixed; 
-    right: 0; 
-    bottom: 0; 
-    min-width: 100%; 
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
     min-height: 100%;
     z-index: -1; /* Ensure video is behind the text */
 }
 
 #text-overlay {
     position: absolute;
-    top: 50%; /* Center vertically */
+    top: 45%; /* Center vertically */
     left: 50%; /* Center horizontally */
     transform: translate(-50%, -50%);
     color: #fff; /* Text color */
-    font-size: 2em; /* Text size */
+    font-size: 1.5em; /* Text size */
     z-index: 1;
+    opacity: 0; /* Start invisible */
+    transition: opacity 1s ease-in-out; /* Smooth transition for opacity change */
+}
+#text-overlay {
+    font-family: 'Indie Flower', cursive;
+    /* The rest of your styles for #text-overlay remain unchanged */
 }

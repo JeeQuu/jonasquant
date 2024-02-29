@@ -11,33 +11,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fullscreen Video Background</title>
 <link rel="stylesheet" href="style.css">
+<script>
+function sendEmail() {
+  var user = "joel"; // The local-part of the email address
+  var domain = "borglundell.se"; // The domain part of the email address
+  window.location.href = "mailto:" + user + "@" + domain;
+}
+</script>
 </head>
-  
+
 <body>
+  <!-- Contact Button Container -->
+<div id="contactButton">
+    <a href="javascript:sendEmail();">
+        <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1709160637/action_1_sf0elq.png" alt="Contact">
+    </a>
+</div>
 
-  <button id="audioControl">Play Audio</button>
+<!-- Audio Control with Image -->
+<div id="audioControl">
+    <a href="javascript:void(0);">
+        <img id="audioControlImage" src="https://res.cloudinary.com/dakoxedxt/image/upload/v1709161448/MUSIC_OFF_1_aabc8l.png" alt="Music Off">
+    </a>
+</div>
 
-<audio autoplay loop id="background-music">
+<!-- Background Music -->
+<audio autoplay loop muted id="background-music">
     <source src="https://res.cloudinary.com/dakoxedxt/video/upload/v1709149116/shyboy7_etlz9b.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
 </audio>
-  
-  <audio autoplay loop muted id="background-music">
-    <source src="https://res.cloudinary.com/dakoxedxt/video/upload/v1709149116/shyboy7_etlz9b.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-</audio>
 
-
-<video autoplay loop muted id="bg-video">
-    <source src="https://res.cloudinary.com/dakoxedxt/video/upload/v1709146688/WEBMOVIE0001-0200_lrqlgz.mp4" type="video/mp4">
+<!-- Background Video -->
+<video autoplay loop muted id="bg-video" playsinline>
+    <source src="https://res.cloudinary.com/dakoxedxt/video/upload/v1709158799/YOUTUBE.mov" type="video/mp4">
     Your browser does not support the video tag.
 </video>
-  
-<div id="text-overlay">Can I get you something?</div>
+
+<!-- Text Overlay -->
+<div id="text-overlay"></div>
 
 <script src="script.js"></script>
 </body>
