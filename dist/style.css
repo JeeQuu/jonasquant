@@ -15,52 +15,60 @@ body, html {
     z-index: -1;
 }
 
-/* Adjustments for desktops */
-@media (min-width: 1024px) {
-    #bg-video {
-        /* You might not need any adjustments if object-fit: cover works well, 
-           but you can add specific styles here if necessary */
-    }
-}
-
-/* Adjustments for mobile devices */
-@media (max-width: 1023px) {
-    #bg-video {
-        /* Specific adjustments for mobile devices if needed */
-    }
-}
+/* No changes needed for #bg-video adjustments for desktops and mobile devices */
 
 #contactButton {
     position: absolute;
-    top: 70%; /* Center vertically */
+    top: 21%; /* Adjusted vertically */
     left: 50%; /* Center horizontally */
-    transform: translate(-50%, -1%);
-    color: #fff; /* Text color */
-    width: ; /* Text size */
-    z-index: 1;}
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    /* Specify the size of the button */
+    cursor: pointer; /* Changes the cursor to a pointer to indicate it's clickable */
+}
 
 #audioControl {
     position: absolute;
-    top: 10%; /* Center vertically */
+    top: 10%; /* Adjusted vertically */
     left: 50%; /* Center horizontally */
-    transform: translate(-50%, -1%);
-    color: #fff; /* Text color */
-    width: ; /* Text size */
-    z-index: 1;}
-  
-  
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    /* Specify the size of the button */
+    cursor: pointer; /* Changes the cursor to a pointer to indicate it's clickable */
+}
+
+#contactButton img {
+    width: 100px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* To remove any extra space beneath the image */
+}
+#audioControl img {
+    width: 80px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* To remove any extra space beneath the image */
+}
+
 #text-overlay {
     position: absolute;
     top: 45%; /* Center vertically */
     left: 50%; /* Center horizontally */
     transform: translate(-50%, -50%);
     color: #fff; /* Text color */
-    font-size: 1.5em; /* Text size */
+    font-size: 1.5em; /* Text size, adjust as needed */
     z-index: 1;
     opacity: 0; /* Start invisible */
     transition: opacity 1s ease-in-out; /* Smooth transition for opacity change */
+    font-family: 'Indie Flower', cursive; /* Your chosen font */
+    text-align: center; /* Center text lines */
+    width: 80%; /* Adjust width as needed to control text wrapping */
 }
-#text-overlay {
-    font-family: 'Indie Flower', cursive;
-    /* The rest of your styles for #text-overlay remain unchanged */
+#signature {
+    position: fixed;
+    bottom: 500px; /* Adjust the distance from the bottom as needed */
+    width: 100%;
+    text-align: center;
+    color: #fff; /* Adjust the color as needed */
+    font-family: 'Indie Flower', cursive; /* Example font */
+    font-size: 14px; /* Adjust the size as needed */
+    z-index: 10; /* Ensure it stays above other content */
 }
