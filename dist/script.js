@@ -1,8 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Text overlay functionality
     const textOverlay = document.getElementById('text-overlay');
     const texts = [
         "The future is now, baby",
-        // ... Add all your other text strings here
+        "How are you today?",
+        "This is how we dance",
+        "You are taking things way too seriously",
+        "Are you scared of robots?",
+        "I'm just a shy boy",
+        "All because of you",
+        "I've been to the ocean",
+        "Colors running through me",
+        "She's such a psychotron",
+        "Save the world, please",
+        "Imagine a world without tomatoes",
+        "Be nice to the nice",
+        "Grow up",
+        "Even super cool ninjas cry sometimes",
+        "If you can't convince them, confuse them",
+        "Favorite toy?",
+        "Be happy",
+        "Human race",
+        "Take chances",
+        "It's only in your head",
+        "Prepare for an emotional rollercoaster",
         "Drink water",
     ];
 
@@ -28,30 +49,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initiateTextChange();
 
-    const backgroundMusic = document.getElementById('background-music');
-    const audioControlImage = document.getElementById('audioControlImage');
-    let isMusicPlaying = false; // Tracks the playing state of the music
-
-    // Revised Function to Toggle Music
-    function toggleMusic() {
-        if (isMusicPlaying) {
-            backgroundMusic.pause();
-            audioControlImage.src = "https://res.cloudinary.com/dakoxedxt/image/upload/v1709161448/MUSIC_OFF_1_aabc8l.png";
-            audioControlImage.alt = "Music Off";
-        } else {
-            backgroundMusic.play().then(() => {
-                audioControlImage.src = "https://res.cloudinary.com/dakoxedxt/image/upload/v1709161330/MUSIC_koxx3m.png";
-                audioControlImage.alt = "Music On";
-            }).catch(error => {
-                console.error('Playback was prevented. Error:', error);
-            });
+    // Audio control functionality using Howler.js
+    var sound = new Howl({
+        src: ['https://res.cloudinary.com/dakoxedxt/video/upload/v1709149116/shyboy7_etlz9b.mp3'],
+        volume: 0.5, // Set the volume to 50%
+        autoplay: false, // Automatically start playing (set to true if needed)
+        loop: true, // Loop the sound
+        onend: function() {
+            console.log('Finished playing');
         }
-        isMusicPlaying = !isMusicPlaying; // Toggle the state
-    }
+    });
 
-    audioControlImage.addEventListener('click', toggleMusic);
+    const audioControlImage = document.getElementById('audioControlImage');
 
-    // Check for iOS to adjust video source if necessary
+    audioControlImage.addEventListener('click', function() {
+        if (sound.playing()) {
+            sound.pause();
+            audioControlImage.src = "https://res.cloudinary.com/dakoxedxt/image/upload/v1709161448/MUSIC_OFF_1_aabc8l.png";
+        } else {
+            sound.play();
+            audioControlImage.src = "https://res.cloudinary.com/dakoxedxt/image/upload/v1709161330/MUSIC_koxx3m.png";
+        }
+    });
+
+    // iOS video source adjustment
     const videoElement = document.getElementById('bg-video');
 
     function isIOS() {
@@ -69,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     videoElement.load();
 });
 
-// Function to send an email - remains unchanged
+// Function to send an email
 function sendEmail() {
     var user = "joel";
     var domain = "borglundell.se";

@@ -2,7 +2,7 @@
 <html lang="en" >
 <head>
   <meta charset="UTF-8">
-  <title>CodePen - A Pen by Jonas Quant</title>
+  <title>CodePen - Jonas Quant site</title>
   <link rel="stylesheet" href="./style.css">
 
 </head>
@@ -11,57 +11,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fullscreen Video Background</title>
-<link rel="stylesheet" href="style.css">
-<script>
-function sendEmail() {
-  var user = "joel"; // The local-part of the email address
-  var domain = "borglundell.se"; // The domain part of the email address
-  window.location.href = "mailto:" + user + "@" + domain;
-}
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullscreen Video Background</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
 </head>
 
 <body>
-  <!-- Signature Text -->
-<div id="signature">
-    Jonas Quant 2024
-</div>
+    <!-- Signature Text -->
+    <div id="signature">
+        Jonas Quant 2024
+    </div>
 
-  <!-- Contact Button Container -->
-<div id="contactButton">
-    <a href="javascript:sendEmail();">
-        <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1709160637/action_1_sf0elq.png" alt="Contact">
-    </a>
-</div>
+    <!-- Contact Button Container -->
+    <div id="contactButton">
+        <a href="javascript:sendEmail();">
+            <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1709160637/action_1_sf0elq.png" alt="Contact">
+        </a>
+    </div>
 
-<!-- Audio Control with Image -->
-<div id="audioControl">
-    <a href="javascript:void(0);">
+    <!-- Audio Control with Image -->
+    <div id="audioControl">
         <img id="audioControlImage" src="https://res.cloudinary.com/dakoxedxt/image/upload/v1709161448/MUSIC_OFF_1_aabc8l.png" alt="Music Off">
-    </a>
-</div>
+    </div>
 
-<!-- Background Music -->
-<audio autoplay loop muted id="background-music">
-    <source src="https://res.cloudinary.com/dakoxedxt/video/upload/v1709149116/shyboy7_etlz9b.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-</audio>
+    <!-- Background Video -->
+    <video autoplay loop muted id="bg-video" playsinline>
+        <source src="https://res.cloudinary.com/dakoxedxt/video/upload/v1709158799/YOUTUBE.mov" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 
-<!-- Background Video -->
-<video autoplay loop muted id="bg-video" playsinline>
-    <source src="https://res.cloudinary.com/dakoxedxt/video/upload/v1709158799/YOUTUBE.mov" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
+    <!-- Text Overlay -->
+    <div id="text-overlay"></div>
 
-<!-- Text Overlay -->
-<div id="text-overlay"></div>
-
-<script src="script.js"></script>
+    <!-- Scripts -->
+    <script>
+        function sendEmail() {
+            var user = "joel"; // The local-part of the email address
+            var domain = "borglundell.se"; // The domain part of the email address
+            window.location.href = "mailto:" + user + "@" + domain;
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.core.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
 <!-- partial -->
