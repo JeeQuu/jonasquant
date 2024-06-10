@@ -40,9 +40,11 @@
             align-items: center;
         }
         .result-container {
+            position: relative;
             display: flex;
             justify-content: center;
-            margin-top: 1px;
+            margin-top: 20px;
+            width: 100%;
         }
         img {
             max-width: 80%;
@@ -65,10 +67,31 @@
         }
         .tilted-image {
             position: absolute;
-            left: 10px;
-            top: 50px;
-            width: 100px;
+            left: -50px;
+            top: 100px;
+            width: 150px;
             transform: rotate(-10deg);
+            z-index: 1;
+        }
+        @media (max-width: 768px) {
+            .tilted-image {
+                width: 100px;
+                left: -20px;
+                top: 50px;
+            }
+            .logo {
+                max-width: 70%;
+            }
+        }
+        @media (max-width: 480px) {
+            .tilted-image {
+                width: 80px;
+                left: -10px;
+                top: 30px;
+            }
+            .logo {
+                max-width: 80%;
+            }
         }
     </style>
 </head>
@@ -76,7 +99,6 @@
     <div class="container">
         <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718018525/Untitled_Artwork_vo0cro.png" alt="Logo" class="logo">
         <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718012552/Untitled_Artwork_f7jjtt.png" alt="Subtitle" class="logo">
-        <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718020329/IMG_0424_bchwgu.jpg" alt="Tilted Image" class="tilted-image">
         <input type="file" id="imageInput" accept="image/*">
         <div class="buttons">
             <button id="invertButton" onclick="invertDuotone()">Invert</button>
@@ -85,6 +107,7 @@
         <canvas id="canvas" style="display:none;"></canvas>
         <div class="result-container">
             <img id="resultImage" src="">
+            <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718020329/IMG_0424_bchwgu.jpg" alt="Tilted Image" class="tilted-image">
         </div>
     </div>
     <script src="script.js"></script>
