@@ -58,24 +58,25 @@ function convertDuotone() {
             canvas.width = canvasWidth;
             canvas.height = canvasHeight;
 
-            // Calculate the dimensions to fit the image within the canvas while maintaining the aspect ratio
-            let drawWidth, drawHeight;
+            // Calculate the dimensions and offset to center crop the image
             const imgRatio = img.width / img.height;
             const canvasRatio = canvasWidth / canvasHeight;
+            let srcX, srcY, srcWidth, srcHeight;
 
             if (imgRatio > canvasRatio) {
-                drawWidth = canvasWidth;
-                drawHeight = canvasWidth / imgRatio;
+                srcHeight = img.height;
+                srcWidth = img.height * canvasRatio;
+                srcX = (img.width - srcWidth) / 2;
+                srcY = 0;
             } else {
-                drawHeight = canvasHeight;
-                drawWidth = canvasHeight * imgRatio;
+                srcWidth = img.width;
+                srcHeight = img.width / canvasRatio;
+                srcX = 0;
+                srcY = (img.height - srcHeight) / 2;
             }
 
-            const offsetX = (canvasWidth - drawWidth) / 2;
-            const offsetY = (canvasHeight - drawHeight) / 2;
-
             ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before drawing
-            ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+            ctx.drawImage(img, srcX, srcY, srcWidth, srcHeight, 0, 0, canvasWidth, canvasHeight);
 
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = imageData.data;
