@@ -74,6 +74,7 @@ function convertDuotone() {
             const offsetX = (canvasWidth - drawWidth) / 2;
             const offsetY = (canvasHeight - drawHeight) / 2;
 
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before drawing
             ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
 
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
