@@ -15,6 +15,18 @@ input, .buttons {
 }
 button {
     margin: 0 5px;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+#invertButton {
+    background-color: #DD67B6;
+    color: #FFFFFF;
+}
+#fullGloryButton {
+    background-color: #67DCD1;
+    color: #FFFFFF;
 }
 .container {
     display: flex;
@@ -40,4 +52,8 @@ img {
 @keyframes float {
     0% { transform: translate(0, 0); }
     100% { transform: translate(100vw, 100vh); }
+}
+.logo {
+    max-width: 50%;
+    height: auto;
 }
