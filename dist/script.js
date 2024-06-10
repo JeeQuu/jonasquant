@@ -58,25 +58,23 @@ function convertDuotone() {
             canvas.width = canvasWidth;
             canvas.height = canvasHeight;
 
-            // Calculate the dimensions to fit the image within the canvas and center it
+            // Calculate the dimensions to fit the image within the canvas while maintaining the aspect ratio
+            let drawWidth, drawHeight;
             const imgRatio = img.width / img.height;
             const canvasRatio = canvasWidth / canvasHeight;
 
-            let drawWidth, drawHeight, offsetX, offsetY;
-
             if (imgRatio > canvasRatio) {
-                drawHeight = canvasHeight;
-                drawWidth = imgRatio * drawHeight;
-                offsetX = (drawWidth - canvasWidth) / 2;
-                offsetY = 0;
-            } else {
                 drawWidth = canvasWidth;
-                drawHeight = drawWidth / imgRatio;
-                offsetX = 0;
-                offsetY = (drawHeight - canvasHeight) / 2;
+                drawHeight = canvasWidth / imgRatio;
+            } else {
+                drawHeight = canvasHeight;
+                drawWidth = canvasHeight * imgRatio;
             }
 
-            ctx.drawImage(img, -offsetX, -offsetY, drawWidth, drawHeight);
+            const offsetX = (canvasWidth - drawWidth) / 2;
+            const offsetY = (canvasHeight - drawHeight) / 2;
+
+            ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
 
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = imageData.data;
