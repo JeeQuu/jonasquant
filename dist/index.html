@@ -63,12 +63,20 @@
             max-width: 50%;
             height: auto;
         }
+        .tilted-image {
+            position: absolute;
+            left: 10px;
+            top: 50px;
+            width: 100px;
+            transform: rotate(-10deg);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718018525/Untitled_Artwork_vo0cro.png" alt="Logo" class="logo">
+        <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718007003/Untitled_Artwork_12_agmgn3.png" alt="Logo" class="logo">
         <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718012552/Untitled_Artwork_f7jjtt.png" alt="Subtitle" class="logo">
+        <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718020329/IMG_0424_bchwgu.jpg" alt="Tilted Image" class="tilted-image">
         <input type="file" id="imageInput" accept="image/*">
         <div class="buttons">
             <button id="invertButton" onclick="invertDuotone()">Invert</button>
