@@ -1,64 +1,83 @@
 <!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="UTF-8">
-  <title>CodePen - Jonas Quant site</title>
-  <link rel="stylesheet" href="./style.css">
-
-</head>
-<body>
-<!-- partial:index.partial.html -->
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fullscreen Video Background</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
-</head>
-
-<body>
-    <!-- Signature Text -->
-    <div id="signature">
-        Jonas Quant 2024
-    </div>
-
-    <!-- Contact Button Container -->
-    <div id="contactButton">
-        <a href="javascript:sendEmail();">
-            <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1709160637/action_1_sf0elq.png" alt="Contact">
-        </a>
-    </div>
-
-    <!-- Audio Control with Image -->
-    <div id="audioControl">
-        <img id="audioControlImage" src="https://res.cloudinary.com/dakoxedxt/image/upload/v1709161448/MUSIC_OFF_1_aabc8l.png" alt="Music Off">
-    </div>
-
-    <!-- Background Video -->
-    <video autoplay loop muted id="bg-video" playsinline>
-        <source src="https://res.cloudinary.com/dakoxedxt/video/upload/v1709158799/YOUTUBE.mov" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-
-    <!-- Text Overlay -->
-    <div id="text-overlay"></div>
-
-    <!-- Scripts -->
-    <script>
-        function sendEmail() {
-            var user = "joel"; // The local-part of the email address
-            var domain = "borglundell.se"; // The domain part of the email address
-            window.location.href = "mailto:" + user + "@" + domain;
+    <title>Duotone Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #EAC302;
+            color: #DD67B6;
+            overflow: hidden;
+            position: relative;
         }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.core.min.js"></script>
+        input, .buttons {
+            margin: 10px;
+        }
+        .buttons {
+            display: inline-block;
+        }
+        button {
+            margin: 0 5px;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #invertButton {
+            background-color: #DD67B6;
+            color: #FFFFFF;
+        }
+        #fullGloryButton {
+            background-color: #67DCD1;
+            color: #FFFFFF;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .result-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        img {
+            max-width: 80%;
+            height: auto;
+            margin-top: 20px;
+        }
+        .floating-text {
+            position: absolute;
+            font-size: 20px;
+            font-weight: bold;
+            animation: float linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100vw, 100vh); }
+        }
+        .logo {
+            max-width: 50%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718007003/Untitled_Artwork_12_agmgn3.png" alt="Logo" class="logo">
+        <input type="file" id="imageInput" accept="image/*">
+        <div class="buttons">
+            <button id="invertButton" onclick="invertDuotone()">Invert</button>
+            <button id="fullGloryButton" onclick="fullGlory()">FULL GLORY</button>
+        </div>
+        <canvas id="canvas" style="display:none;"></canvas>
+        <div class="result-container">
+            <img id="resultImage" src="">
+        </div>
+    </div>
     <script src="script.js"></script>
-</body>
-</html>
-<!-- partial -->
-  <script  src="./script.js"></script>
-
 </body>
 </html>
