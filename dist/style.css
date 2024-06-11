@@ -4,7 +4,7 @@ html, body {
     padding: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     background-color: #EAC302;
     color: #DD67B6;
     font-family: Arial, sans-serif;
@@ -14,6 +14,7 @@ html, body {
 body {
     text-align: center;
     position: relative;
+    padding-top: 20px; /* Added padding to move content slightly down */
 }
 
 input, .buttons {
@@ -55,6 +56,7 @@ button {
     align-items: center;
     width: 90%;
     max-width: 600px;
+    margin: 0 auto;
 }
 
 .result-container {
