@@ -9,20 +9,6 @@ const fullGloryColors = [
     '#8E44AD'  // Purple
 ];
 
-// URL of the sticker
-const stickerUrl = "https://res.cloudinary.com/dakoxedxt/image/upload/v1717971677/BEHAPPYSTICKER_aeb9uy.png";
-let stickerImg = new Image();
-stickerImg.crossOrigin = "Anonymous"; // Ensure cross-origin access
-stickerImg.src = stickerUrl;
-
-stickerImg.onload = () => {
-    console.log("Sticker image loaded successfully.");
-};
-
-stickerImg.onerror = () => {
-    console.error("Failed to load the sticker image.");
-};
-
 function hexToRgb(hex) {
     const bigint = parseInt(hex.slice(1), 16);
     return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
@@ -37,6 +23,7 @@ function interpolateColor(color1, color2, factor) {
 }
 
 function convertDuotone() {
+    console.log("convertDuotone called");
     const imageInput = document.getElementById('imageInput').files[0];
     if (!imageInput) {
         alert("Please select an image file.");
@@ -45,6 +32,7 @@ function convertDuotone() {
 
     const reader = new FileReader();
     reader.onload = function(event) {
+        console.log("FileReader onload called");
         const img = new Image();
         img.src = event.target.result;
 
@@ -75,6 +63,7 @@ function convertDuotone() {
                 srcY = (img.height - srcHeight) / 2;
             }
 
+            console.log("Drawing image on canvas");
             ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before drawing
             ctx.drawImage(img, srcX, srcY, srcWidth, srcHeight, 0, 0, canvasWidth, canvasHeight);
 
@@ -115,17 +104,12 @@ function convertDuotone() {
 
             ctx.putImageData(imageData, 0, 0);
 
-            // Draw the sticker with random rotation and position
-            if (stickerImg.complete) {
-                drawSticker(ctx, canvas.width, canvas.height);
-            } else {
-                stickerImg.onload = () => {
-                    drawSticker(ctx, canvas.width, canvas.height);
-                };
+            try {
+                document.getElementById('resultImage').src = canvas.toDataURL('image/png');
+                console.log("Image processing complete.");
+            } catch (e) {
+                console.error("Error setting resultImage src:", e);
             }
-
-            document.getElementById('resultImage').src = canvas.toDataURL('image/png');
-            console.log("Image processing complete.");
         };
 
         img.onerror = () => {
@@ -140,33 +124,15 @@ function convertDuotone() {
     reader.readAsDataURL(imageInput);
 }
 
-function drawSticker(ctx, canvasWidth, canvasHeight) {
-    const overlayWidth = 800;  // Double the size for the sticker
-    const overlayHeight = stickerImg.height * (overlayWidth / stickerImg.width); // Maintain aspect ratio
-
-    // Random position within the canvas
-    const xPosition = Math.random() * (canvasWidth - overlayWidth - 20) + 10;
-    const yPosition = Math.random() * (canvasHeight - overlayHeight - 20) + 10;
-
-    // Random rotation within ±45 degrees
-    const rotation = (Math.random() - 0.5) * (Math.PI / 4);
-
-    ctx.save();
-    ctx.translate(xPosition + overlayWidth / 2, yPosition + overlayHeight / 2);
-    ctx.rotate(rotation);
-    ctx.drawImage(stickerImg, -overlayWidth / 2, -overlayHeight / 2, overlayWidth, overlayHeight);
-    ctx.restore();
-
-    console.log("Sticker drawn on canvas.");
-}
-
 function invertDuotone() {
     isInverted = !isInverted;
+    console.log("Inverting colors");
     convertDuotone();
 }
 
 function fullGlory() {
     isFullGlory = !isFullGlory;
+    console.log("Setting full glory mode");
     convertDuotone();
 }
 
@@ -234,6 +200,17 @@ function animateText(element) {
 // Increase the number of "Be Happy" and "6 14 24" instances here
 for (let i = 0; i < 50; i++) {
     createFloatingText();
+}
+
+// Function to download the image
+function downloadImage() {
+    const canvas = document.getElementById('canvas');
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = 'duotone_image.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 // Run initial conversion on page load
