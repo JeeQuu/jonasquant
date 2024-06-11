@@ -14,11 +14,11 @@ html, body {
 body {
     text-align: center;
     position: relative;
-    padding-top: 20px; /* Added padding to move content slightly down */
+    padding-top: 10px; /* Reduced padding */
 }
 
 input, .buttons {
-    margin: 10px;
+    margin: 1px; /* Reduced margin */
 }
 
 .buttons {
@@ -28,11 +28,11 @@ input, .buttons {
 }
 
 button {
-    margin: 5px;
-    padding: 10px;
+    margin: 16px; /* Reduced margin */
+    padding: 8px; /* Reduced padding */
     border: none;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px; /* Reduced font size */
 }
 
 #invertButton {
@@ -46,7 +46,7 @@ button {
 }
 
 #downloadButton {
-    background-color: #4CAF50;
+    background-color: #8E44AD;
     color: #FFFFFF;
 }
 
@@ -63,14 +63,14 @@ button {
     position: relative;
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: 10px; /* Reduced margin */
     width: 100%;
 }
 
 img {
     max-width: 100%;
     height: auto;
-    margin-top: 10px;
+    margin-top: -25px; /* Reduced margin */
 }
 
 .floating-text {
@@ -87,36 +87,36 @@ img {
 }
 
 .logo {
-    max-width: 70%;
+    max-width: 60%; /* Reduced max width */
     height: auto;
-    margin-bottom: 10px;
+    margin-bottom: 1px; /* Reduced margin */
 }
 
 .tilted-image {
     position: absolute;
-    left: 50%;
-    top: 120px;
-    width: 120px;
-    transform: rotate(-10deg) translateX(-50%);
-    z-index: 1;
+    left: 10%;
+    top: -200px; /* Adjusted position */
+    width: 110px; /* Keep the size */
+    transform: rotate(30deg) translateX(-50%);
+    z-index: 0;
 }
 
 @media (max-width: 768px) {
     .tilted-image {
-        width: 90px;
-        top: 80px;
+        width: 70px; /* Reduced width */
+        top: 20px; /* Adjusted position */
     }
     .logo {
-        max-width: 80%;
+        max-width: 10%; /* Reduced max width */
     }
 }
 
 @media (max-width: 480px) {
     .tilted-image {
-        width: 70px;
-        top: 60px;
+        width: 60px; /* Reduced width */
+        top: 10px; /* Adjusted position */
     }
     .logo {
-        max-width: 90%;
+        max-width: 80%; /* Reduced max width */
     }
 }
