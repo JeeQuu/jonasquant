@@ -6,6 +6,7 @@ body {
     overflow-y: auto;
     position: relative;
     padding: 20px 0;
+    margin: 0;
 }
 
 input, .buttons {
@@ -33,6 +34,11 @@ button {
 
 #fullGloryButton {
     background-color: #67DCD1;
+    color: #FFFFFF;
+}
+
+#downloadButton {
+    background-color: #4CAF50;
     color: #FFFFFF;
 }
 
@@ -64,6 +70,7 @@ img {
     font-size: 20px;
     font-weight: bold;
     animation: float linear infinite;
+    white-space: nowrap;
 }
 
 @keyframes float {
@@ -79,17 +86,16 @@ img {
 
 .tilted-image {
     position: absolute;
-    left: -40px;
+    left: 50%;
     top: 120px;
     width: 120px;
-    transform: rotate(-10deg);
+    transform: rotate(-10deg) translateX(-50%);
     z-index: 1;
 }
 
 @media (max-width: 768px) {
     .tilted-image {
         width: 90px;
-        left: -30px;
         top: 80px;
     }
     .logo {
@@ -100,7 +106,6 @@ img {
 @media (max-width: 480px) {
     .tilted-image {
         width: 70px;
-        left: -20px;
         top: 60px;
     }
     .logo {
