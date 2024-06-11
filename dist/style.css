@@ -25,6 +25,8 @@ input, .buttons {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+    z-index: 10; /* Ensure buttons are above floating images */
+    position: relative;
 }
 
 button {
@@ -33,6 +35,8 @@ button {
     border: none;
     cursor: pointer;
     font-size: 14px; /* Reduced font size */
+    z-index: 10; /* Ensure buttons are above floating images */
+    position: relative;
 }
 
 #invertButton {
@@ -57,6 +61,8 @@ button {
     width: 90%;
     max-width: 600px;
     margin: 0 auto;
+    z-index: 10; /* Ensure container is above floating images */
+    position: relative;
 }
 
 .result-container {
@@ -65,6 +71,7 @@ button {
     justify-content: center;
     margin-top: 10px; /* Reduced margin */
     width: 100%;
+    z-index: 10; /* Ensure result container is above floating images */
 }
 
 img {
@@ -77,6 +84,7 @@ img {
     position: absolute;
     will-change: transform;
     animation: rotate infinite linear;
+    z-index: 5; /* Ensure floating images are behind buttons and container */
 }
 
 @keyframes rotate {
