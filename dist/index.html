@@ -3,97 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Duotone Converter</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #EAC302;
-            color: #DD67B6;
-            overflow-y: auto;
-            position: relative;
-            padding: 50px 0;
-        }
-        input, .buttons {
-            margin: 10px;
-        }
-        .buttons {
-            display: inline-block;
-        }
-        button {
-            margin: 0 5px;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        #invertButton {
-            background-color: #DD67B6;
-            color: #FFFFFF;
-        }
-        #fullGloryButton {
-            background-color: #67DCD1;
-            color: #FFFFFF;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .result-container {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-            width: 100%;
-        }
-        img {
-            max-width: 80%;
-            height: auto;
-            margin-top: 20px;
-        }
-        .floating-text {
-            position: absolute;
-            font-size: 20px;
-            font-weight: bold;
-            animation: float linear infinite;
-        }
-        @keyframes float {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(100vw, 100vh); }
-        }
-        .logo {
-            max-width: 50%;
-            height: auto;
-        }
-        .tilted-image {
-            position: absolute;
-            left: -50px;
-            top: 100px;
-            width: 150px;
-            transform: rotate(-10deg);
-            z-index: 1;
-        }
-        @media (max-width: 768px) {
-            .tilted-image {
-                width: 100px;
-                left: -20px;
-                top: 50px;
-            }
-            .logo {
-                max-width: 70%;
-            }
-        }
-        @media (max-width: 480px) {
-            .tilted-image {
-                width: 80px;
-                left: -10px;
-                top: 30px;
-            }
-            .logo {
-                max-width: 80%;
-            }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
@@ -103,11 +14,12 @@
         <div class="buttons">
             <button id="invertButton" onclick="invertDuotone()">Invert</button>
             <button id="fullGloryButton" onclick="fullGlory()">FULL GLORY</button>
+            <button id="downloadButton" onclick="downloadImage()">Download</button>
         </div>
         <canvas id="canvas" style="display:none;"></canvas>
         <div class="result-container">
             <img id="resultImage" src="">
-            <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718020329/IMG_0424_bchwgu.jpg" alt="Tilted Image" class="tilted-image">
+            <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718020329/IMG_0424_bchwgu.jpg" alt="Tilted Image" class="tilted-image" id="tiltedImage">
         </div>
     </div>
     <script src="script.js"></script>
