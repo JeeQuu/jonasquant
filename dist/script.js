@@ -23,6 +23,19 @@ function interpolateColor(color1, color2, factor) {
     return result;
 }
 
+function randomizeSticker(ctx, canvasWidth, canvasHeight, beHappyImage) {
+    const beHappyWidth = 100 * 8; // Smaller size
+    const beHappyHeight = (beHappyImage.height / beHappyImage.width) * beHappyWidth;
+    const randomX = Math.random() * (canvasWidth - beHappyWidth);
+    const randomY = Math.random() * (canvasHeight - beHappyHeight);
+    const randomRotation = (Math.random() - 0.5) * Math.PI / 2; // Random rotation between -45 to 45 degrees
+    ctx.save();
+    ctx.translate(randomX + beHappyWidth / 2, randomY + beHappyHeight / 2);
+    ctx.rotate(randomRotation);
+    ctx.drawImage(beHappyImage, -beHappyWidth / 2, -beHappyHeight / 2, beHappyWidth, beHappyHeight);
+    ctx.restore();
+}
+
 function convertDuotone() {
     console.log("convertDuotone called");
     const imageInput = document.getElementById('imageInput').files[0];
@@ -35,6 +48,7 @@ function convertDuotone() {
     reader.onload = function(event) {
         console.log("FileReader onload called");
         const img = new Image();
+        img.crossOrigin = "anonymous"; // Set CORS attribute
         img.src = event.target.result;
 
         img.onload = () => {
@@ -105,22 +119,53 @@ function convertDuotone() {
 
             ctx.putImageData(imageData, 0, 0);
 
-            // Create a thumbnail
-            const thumbnailCanvas = document.createElement('canvas');
-            const thumbnailCtx = thumbnailCanvas.getContext('2d');
-            const thumbnailWidth = 270; // Thumbnail width
-            const thumbnailHeight = (canvasHeight / canvasWidth) * thumbnailWidth; // Maintain aspect ratio
-            thumbnailCanvas.width = thumbnailWidth;
-            thumbnailCanvas.height = thumbnailHeight;
-            thumbnailCtx.drawImage(canvas, 0, 0, canvasWidth, canvasHeight, 0, 0, thumbnailWidth, thumbnailHeight);
+            // Load and draw the "post-it note" image in the top-left corner
+            const postItImage = new Image();
+            postItImage.crossOrigin = "anonymous"; // Set CORS attribute
+            postItImage.src = 'https://res.cloudinary.com/dakoxedxt/image/upload/v1718020329/IMG_0424_bchwgu.jpg';
+            postItImage.onload = () => {
+                const postItWidth = 150 * 2.5; // 2.5x bigger
+                const postItHeight = (postItImage.height / postItImage.width) * postItWidth;
+                ctx.save();
+                ctx.translate(100, 215); // Move further inside to fit within the frame
+                ctx.rotate(-0.2); // Slightly tilt the image
+                ctx.drawImage(postItImage, -postItWidth / 2, -postItHeight / 2, postItWidth, postItHeight);
+                ctx.restore();
 
-            try {
-                document.getElementById('resultImage').src = thumbnailCanvas.toDataURL('image/png');
-                fullSizeImageUrl = canvas.toDataURL('image/png'); // Store the full-size image URL
-                console.log("Image processing complete.");
-            } catch (e) {
-                console.error("Error setting resultImage src:", e);
-            }
+                // Load and randomly place the "Be Happy" sticker
+                const beHappyImage = new Image();
+                beHappyImage.crossOrigin = "anonymous"; // Set CORS attribute
+                beHappyImage.src = 'https://res.cloudinary.com/dakoxedxt/image/upload/v1717971677/BEHAPPYSTICKER_aeb9uy.png';
+                beHappyImage.onload = () => {
+                    randomizeSticker(ctx, canvasWidth, canvasHeight, beHappyImage);
+
+                    // Create a higher resolution canvas for download
+                    const highResCanvas = document.createElement('canvas');
+                    const highResCtx = highResCanvas.getContext('2d');
+                    const highResWidth = canvasWidth * 2;
+                    const highResHeight = canvasHeight * 2;
+                    highResCanvas.width = highResWidth;
+                    highResCanvas.height = highResHeight;
+                    highResCtx.drawImage(canvas, 0, 0, canvasWidth, canvasHeight, 0, 0, highResWidth, highResHeight);
+
+                    // Create a thumbnail
+                    const thumbnailCanvas = document.createElement('canvas');
+                    const thumbnailCtx = thumbnailCanvas.getContext('2d');
+                    const thumbnailWidth = 270; // Thumbnail width
+                    const thumbnailHeight = (canvasHeight / canvasWidth) * thumbnailWidth; // Maintain aspect ratio
+                    thumbnailCanvas.width = thumbnailWidth;
+                    thumbnailCanvas.height = thumbnailHeight;
+                    thumbnailCtx.drawImage(canvas, 0, 0, canvasWidth, canvasHeight, 0, 0, thumbnailWidth, thumbnailHeight);
+
+                    try {
+                        document.getElementById('resultImage').src = thumbnailCanvas.toDataURL('image/png');
+                        fullSizeImageUrl = highResCanvas.toDataURL('image/png'); // Store the high-resolution image URL
+                        console.log("Image processing complete.");
+                    } catch (e) {
+                        console.error("Error setting resultImage src:", e);
+                    }
+                };
+            };
         };
 
         img.onerror = () => {
