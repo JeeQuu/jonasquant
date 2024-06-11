@@ -1,5 +1,6 @@
 let isInverted = false;
 let isFullGlory = false;
+let fullSizeImageUrl = ''; // To store the full-size image URL
 
 const duoColors = ['#DD67B6', '#EAC302']; // Default color set for duotone
 const fullGloryColors = [
@@ -104,8 +105,18 @@ function convertDuotone() {
 
             ctx.putImageData(imageData, 0, 0);
 
+            // Create a thumbnail
+            const thumbnailCanvas = document.createElement('canvas');
+            const thumbnailCtx = thumbnailCanvas.getContext('2d');
+            const thumbnailWidth = 270; // Thumbnail width
+            const thumbnailHeight = (canvasHeight / canvasWidth) * thumbnailWidth; // Maintain aspect ratio
+            thumbnailCanvas.width = thumbnailWidth;
+            thumbnailCanvas.height = thumbnailHeight;
+            thumbnailCtx.drawImage(canvas, 0, 0, canvasWidth, canvasHeight, 0, 0, thumbnailWidth, thumbnailHeight);
+
             try {
-                document.getElementById('resultImage').src = canvas.toDataURL('image/png');
+                document.getElementById('resultImage').src = thumbnailCanvas.toDataURL('image/png');
+                fullSizeImageUrl = canvas.toDataURL('image/png'); // Store the full-size image URL
                 console.log("Image processing complete.");
             } catch (e) {
                 console.error("Error setting resultImage src:", e);
@@ -204,9 +215,8 @@ for (let i = 0; i < 50; i++) {
 
 // Function to download the image
 function downloadImage() {
-    const canvas = document.getElementById('canvas');
     const link = document.createElement('a');
-    link.href = canvas.toDataURL('image/png');
+    link.href = fullSizeImageUrl;
     link.download = 'duotone_image.png';
     document.body.appendChild(link);
     link.click();
