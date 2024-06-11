@@ -1,59 +1,109 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    margin-top: 50px;
     background-color: #EAC302;
     color: #DD67B6;
-    overflow: hidden;
+    overflow-y: auto;
     position: relative;
+    padding: 20px 0;
 }
+
 input, .buttons {
     margin: 10px;
 }
+
 .buttons {
-    display: inline-block;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 }
+
 button {
-    margin: 0 5px;
+    margin: 5px;
     padding: 10px;
     border: none;
     cursor: pointer;
     font-size: 16px;
 }
+
 #invertButton {
     background-color: #DD67B6;
     color: #FFFFFF;
 }
+
 #fullGloryButton {
     background-color: #67DCD1;
     color: #FFFFFF;
 }
+
 .container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 90%;
+    max-width: 600px;
+    margin: 0 auto;
 }
+
 .result-container {
+    position: relative;
     display: flex;
     justify-content: center;
     margin-top: 20px;
+    width: 100%;
 }
+
 img {
-    max-width: 80%;
+    max-width: 100%;
     height: auto;
-    margin-top: 20px;
+    margin-top: 10px;
 }
+
 .floating-text {
     position: absolute;
     font-size: 20px;
     font-weight: bold;
     animation: float linear infinite;
 }
+
 @keyframes float {
     0% { transform: translate(0, 0); }
     100% { transform: translate(100vw, 100vh); }
 }
+
 .logo {
-    max-width: 50%;
+    max-width: 70%;
     height: auto;
+    margin-bottom: 10px;
+}
+
+.tilted-image {
+    position: absolute;
+    left: -40px;
+    top: 120px;
+    width: 120px;
+    transform: rotate(-10deg);
+    z-index: 1;
+}
+
+@media (max-width: 768px) {
+    .tilted-image {
+        width: 90px;
+        left: -30px;
+        top: 80px;
+    }
+    .logo {
+        max-width: 80%;
+    }
+}
+
+@media (max-width: 480px) {
+    .tilted-image {
+        width: 70px;
+        left: -20px;
+        top: 60px;
+    }
+    .logo {
+        max-width: 90%;
+    }
 }
