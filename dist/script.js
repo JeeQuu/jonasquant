@@ -120,8 +120,8 @@ function convertDuotone() {
 
         img.onload = () => {
             console.log("Main image loaded successfully.");
-            const canvasWidth = 1080; // Instagram story width
-            const canvasHeight = 1920; // Instagram story height
+            const canvasWidth = 1080 * 0.9; // Reduce canvas width by 10%
+            const canvasHeight = 1920 * 0.9; // Reduce canvas height by 10%
 
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
