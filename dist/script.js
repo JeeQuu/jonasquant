@@ -1,3 +1,70 @@
+const images = [
+    'https://res.cloudinary.com/dakoxedxt/image/upload/v1718132815/shake_s0wlpq.png',
+    'https://res.cloudinary.com/dakoxedxt/image/upload/v1718132815/happy_cqemdz.png',
+    'https://res.cloudinary.com/dakoxedxt/image/upload/v1718132815/date_hjbdbm.png'
+];
+
+function createFloatingImages() {
+    for (let i = 0; i < 50; i++) {
+        const imgSrc = images[Math.floor(Math.random() * images.length)];
+        const img = document.createElement('img');
+        img.src = imgSrc;
+        img.className = 'floating-image';
+        img.style.width = `${Math.random() * 50 + 50}px`; // Random size between 50px and 100px
+        img.style.animationDuration = `${Math.random() * 10 + 5}s`; // Random duration for rotation
+
+        // Set random position and direction
+        setRandomStartPosition(img);
+        setRandomDirection(img);
+
+        document.body.appendChild(img);
+
+        // Start the animation
+        animateImage(img);
+    }
+}
+
+function setRandomStartPosition(element) {
+    const startPositionX = Math.random() * window.innerWidth;
+    const startPositionY = Math.random() * window.innerHeight;
+    element.style.left = `${startPositionX}px`;
+    element.style.top = `${startPositionY}px`;
+}
+
+function setRandomDirection(element) {
+    const angle = Math.random() * 2 * Math.PI; // Random angle in radians
+    element.dataset.dx = Math.cos(angle);
+    element.dataset.dy = Math.sin(angle);
+}
+
+function animateImage(element) {
+    const speed = 1; // Adjust speed as needed
+    let startX = parseFloat(element.style.left);
+    let startY = parseFloat(element.style.top);
+
+    const move = () => {
+        startX += speed * element.dataset.dx;
+        startY += speed * element.dataset.dy;
+
+        // Wrap around the edges
+        if (startX < -100) startX = window.innerWidth + 100;
+        if (startX > window.innerWidth + 100) startX = -100;
+        if (startY < -100) startY = window.innerHeight + 100;
+        if (startY > window.innerHeight + 100) startY = -100;
+
+        element.style.left = `${startX}px`;
+        element.style.top = `${startY}px`;
+
+        requestAnimationFrame(move);
+    };
+
+    move();
+}
+
+// Call the function to create floating images
+createFloatingImages();
+
+// Your existing duotone code here...
 let isInverted = false;
 let isFullGlory = false;
 let fullSizeImageUrl = ''; // To store the full-size image URL
@@ -142,23 +209,14 @@ function convertDuotone() {
                     // Create a higher resolution canvas for download
                     const highResCanvas = document.createElement('canvas');
                     const highResCtx = highResCanvas.getContext('2d');
-                    const highResWidth = canvasWidth * 2;
-                    const highResHeight = canvasHeight * 2;
+                    const highResWidth = canvasWidth * 1.5;
+                    const highResHeight = canvasHeight * 1.5;
                     highResCanvas.width = highResWidth;
                     highResCanvas.height = highResHeight;
                     highResCtx.drawImage(canvas, 0, 0, canvasWidth, canvasHeight, 0, 0, highResWidth, highResHeight);
 
-                    // Create a thumbnail
-                    const thumbnailCanvas = document.createElement('canvas');
-                    const thumbnailCtx = thumbnailCanvas.getContext('2d');
-                    const thumbnailWidth = 270; // Thumbnail width
-                    const thumbnailHeight = (canvasHeight / canvasWidth) * thumbnailWidth; // Maintain aspect ratio
-                    thumbnailCanvas.width = thumbnailWidth;
-                    thumbnailCanvas.height = thumbnailHeight;
-                    thumbnailCtx.drawImage(canvas, 0, 0, canvasWidth, canvasHeight, 0, 0, thumbnailWidth, thumbnailHeight);
-
                     try {
-                        document.getElementById('resultImage').src = thumbnailCanvas.toDataURL('image/png');
+                        document.getElementById('resultImage').src = canvas.toDataURL('image/png');
                         fullSizeImageUrl = highResCanvas.toDataURL('image/png'); // Store the high-resolution image URL
                         console.log("Image processing complete.");
                     } catch (e) {
@@ -190,72 +248,6 @@ function fullGlory() {
     isFullGlory = !isFullGlory;
     console.log("Setting full glory mode");
     convertDuotone();
-}
-
-function createFloatingText() {
-    const texts = ['Be Happy', '6 14 24'];
-    const textContent = texts[Math.floor(Math.random() * texts.length)];
-    
-    const text = document.createElement('div');
-    text.className = 'floating-text';
-    text.textContent = textContent;
-
-    // Set random size and speed
-    const size = Math.random() * 20 + 10; // Size between 10px and 30px
-    text.style.fontSize = `${size}px`;
-
-    // Speed inversely proportional to size
-    const duration = 10 - (size / 10);
-    text.style.animationDuration = `${duration}s`;
-
-    document.body.appendChild(text);
-
-    setRandomStartPosition(text);
-    animateText(text);
-}
-
-function setRandomStartPosition(element) {
-    // Randomly select a side: 0 = left, 1 = right, 2 = top, 3 = bottom
-    const side = Math.floor(Math.random() * 4);
-    let startPositionX, startPositionY;
-
-    if (side === 0) { // left
-        startPositionX = -100;
-        startPositionY = Math.random() * window.innerHeight;
-    } else if (side === 1) { // right
-        startPositionX = window.innerWidth + 100;
-        startPositionY = Math.random() * window.innerHeight;
-    } else if (side === 2) { // top
-        startPositionX = Math.random() * window.innerWidth;
-        startPositionY = -100;
-    } else { // bottom
-        startPositionX = Math.random() * window.innerWidth;
-        startPositionY = window.innerHeight + 100;
-    }
-
-    element.style.left = `${startPositionX}px`;
-    element.style.top = `${startPositionY}px`;
-}
-
-function animateText(element) {
-    const duration = parseFloat(element.style.animationDuration);
-    const endPositionX = Math.random() * window.innerWidth;
-    const endPositionY = Math.random() * window.innerHeight;
-
-    element.style.animationName = 'none';
-    requestAnimationFrame(() => {
-        element.style.transform = `translate(${endPositionX - parseFloat(element.style.left)}px, ${endPositionY - parseFloat(element.style.top)}px)`;
-        element.style.animationName = '';
-    });
-
-    element.addEventListener('animationiteration', () => {
-        setRandomStartPosition(element);
-    });
-}
-
-// Increase the number of "Be Happy" and "6 14 24" instances here
-for (let i = 0; i < 50; i++) {
-    createFloatingText();
 }
 
 // Function to download the image
