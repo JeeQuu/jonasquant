@@ -96,8 +96,8 @@ img {
     position: absolute;
     left: 10%;
     top: -200px; /* Adjusted position */
-    width: 110px; /* Keep the size */
-    transform: rotate(30deg) translateX(-50%);
+    width: 70px; /* Keep the size */
+    transform: rotate(30deg) translateX(20%);
     z-index: 0;
 }
 
@@ -113,7 +113,7 @@ img {
 
 @media (max-width: 480px) {
     .tilted-image {
-        width: 60px; /* Reduced width */
+        width: 40px; /* Reduced width */
         top: 10px; /* Adjusted position */
     }
     .logo {
