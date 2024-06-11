@@ -1,12 +1,19 @@
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: #EAC302;
     color: #DD67B6;
-    overflow-y: auto;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}
+
+body {
+    text-align: center;
     position: relative;
-    padding: 20px 0;
-    margin: 0;
 }
 
 input, .buttons {
@@ -48,7 +55,6 @@ button {
     align-items: center;
     width: 90%;
     max-width: 600px;
-    margin: 0 auto;
 }
 
 .result-container {
