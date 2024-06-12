@@ -88,7 +88,7 @@ button, #imageInput {
     display: flex;
     justify-content: center;
     margin-top: 10px;
-    width: 100%;
+    width: 50%;
     z-index: 10;
 }
 
@@ -154,4 +154,3 @@ img {
         max-width: 80%;
     }
 }
-
