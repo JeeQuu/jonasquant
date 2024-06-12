@@ -88,7 +88,7 @@ button, #imageInput {
     display: flex;
     justify-content: center;
     margin-top: 10px;
-    width: 50%;
+    width: 70%;
     z-index: 10;
 }
 
@@ -128,8 +128,8 @@ img {
 
 .tilted-image {
     position: absolute;
-    left: 200%;
-    top: -120px;
+    left: 90%;
+    top: -100px;
     width: 70px;
     transform: rotate(-11deg) translateX(-50%);
     z-index: 0;
