@@ -38,7 +38,7 @@ button, #imageInput {
     z-index: 10;
     position: relative;
     background-color: #8E44AD; /* Button color */
-    color: #FFFFFF; /* Text color */
+    color: #000000; /* Text color */
 }
 
 #invertButton {
