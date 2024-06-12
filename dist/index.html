@@ -8,13 +8,17 @@
 </head>
 <body>
     <div class="container">
-        <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718018525/Untitled_Artwork_vo0cro.png" alt="Logo" class="logo">
         <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718012552/Untitled_Artwork_f7jjtt.png" alt="Subtitle" class="logo">
+        <p class="instructions">
+            1. Upload your image <br>
+            2. Use one of the buttons to find your dream combo <br>
+            3. Longpress and save to photos <br>
+            4. Post the image on your Instagram story and tag @jonasquant and you have now entered the competition
+        </p>
         <input type="file" id="imageInput" accept="image/*">
         <div class="buttons">
             <button id="invertButton" onclick="invertDuotone()">Invert</button>
             <button id="fullGloryButton" onclick="fullGlory()">FULL GLORY</button>
-            <button id="downloadButton" onclick="downloadImage()">Download</button>
         </div>
         <canvas id="canvas" style="display:none;"></canvas>
         <div class="result-container">
