@@ -6,7 +6,7 @@ html, body {
     justify-content: center;
     align-items: flex-start;
     background-color: #EAC302;
-    color: #DD67B6;
+    color: #000000;
     font-family: Arial, sans-serif;
     overflow: hidden;
 }
@@ -14,29 +14,31 @@ html, body {
 body {
     text-align: center;
     position: relative;
-    padding-top: 10px; /* Reduced padding */
+    padding-top: 29px;
 }
 
 input, .buttons {
-    margin: 1px; /* Reduced margin */
+    margin: 1px;
 }
 
 .buttons {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    z-index: 10; /* Ensure buttons are above floating images */
+    z-index: 10;
     position: relative;
 }
 
-button {
-    margin: 15px; /* Reduced margin */
-    padding: 8px; /* Reduced padding */
+button, #imageInput {
+    margin: 15px;
+    padding: 3px;
     border: none;
     cursor: pointer;
-    font-size: 14px; /* Reduced font size */
-    z-index: 10; /* Ensure buttons are above floating images */
+    font-size: 14px;
+    z-index: 10;
     position: relative;
+    background-color: #8E44AD; /* Button color */
+    color: #FFFFFF; /* Text color */
 }
 
 #invertButton {
@@ -49,19 +51,35 @@ button {
     color: #FFFFFF;
 }
 
-#downloadButton {
-    background-color: #8E44AD;
+#imageInput {
+    display: inline-block;
+    padding: 0.35em 1.2em;
+    border: 0.1em solid #FFFFFF;
+    margin: 0 0.3em 0.3em 0;
+    border-radius: 0.12em;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
     color: #FFFFFF;
+    text-align: center;
+    transition: all 0.2s;
+    background-color: #8E44AD; /* Match the download button color */
+    cursor: pointer;
+}
+
+#imageInput:hover {
+    background-color: #6C3483; /* Slightly darker shade for hover */
 }
 
 .container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 90%;
+    width: 120%;
     max-width: 600px;
     margin: 0 auto;
-    z-index: 10; /* Ensure container is above floating images */
+    z-index: 10;
     position: relative;
 }
 
@@ -69,22 +87,22 @@ button {
     position: relative;
     display: flex;
     justify-content: center;
-    margin-top: 10px; /* Reduced margin */
+    margin-top: 10px;
     width: 100%;
-    z-index: 10; /* Ensure result container is above floating images */
+    z-index: 10;
 }
 
 img {
     max-width: 100%;
     height: auto;
-    margin-top: -25px; /* Reduced margin */
+    margin-top: -25px;
 }
 
 .floating-image {
     position: absolute;
     will-change: transform;
     animation: rotate infinite linear;
-    z-index: 5; /* Ensure floating images are behind buttons and container */
+    z-index: 5;
 }
 
 @keyframes rotate {
@@ -97,36 +115,43 @@ img {
 }
 
 .logo {
-    max-width: 60%; /* Reduced max width */
+    max-width: 60%;
     height: auto;
-    margin-bottom: 1px; /* Reduced margin */
+    margin-bottom: 1px;
+}
+
+.instructions {
+    font-size: 16px;
+    color: #DD67B6;
+    margin-bottom: 20px;
 }
 
 .tilted-image {
     position: absolute;
     left: 10%;
-    top: -200px; /* Adjusted position */
-    width: 110px; /* Keep the size */
-    transform: rotate(30deg) translateX(-50%);
+    top: -320px;
+    width: 70px;
+    transform: rotate(-11deg) translateX(-50%);
     z-index: 0;
 }
 
 @media (max-width: 768px) {
     .tilted-image {
-        width: 70px; /* Reduced width */
-        top: 20px; /* Adjusted position */
+        width: 70px;
+        top: 20px;
     }
     .logo {
-        max-width: 10%; /* Reduced max width */
+        max-width: 10%;
     }
 }
 
 @media (max-width: 480px) {
     .tilted-image {
-        width: 60px; /* Reduced width */
-        top: 10px; /* Adjusted position */
+        width: 60px;
+        top: 10px;
     }
     .logo {
-        max-width: 80%; /* Reduced max width */
+        max-width: 80%;
     }
 }
+
