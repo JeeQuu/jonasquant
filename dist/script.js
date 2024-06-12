@@ -67,7 +67,6 @@ createFloatingImages();
 // Your existing duotone code here...
 let isInverted = false;
 let isFullGlory = false;
-let fullSizeImageUrl = ''; // To store the full-size image URL
 
 const duoColors = ['#DD67B6', '#EAC302']; // Default color set for duotone
 const fullGloryColors = [
@@ -217,7 +216,6 @@ function convertDuotone() {
 
                     try {
                         document.getElementById('resultImage').src = canvas.toDataURL('image/png');
-                        fullSizeImageUrl = highResCanvas.toDataURL('image/png'); // Store the high-resolution image URL
                         console.log("Image processing complete.");
                     } catch (e) {
                         console.error("Error setting resultImage src:", e);
@@ -248,16 +246,6 @@ function fullGlory() {
     isFullGlory = !isFullGlory;
     console.log("Setting full glory mode");
     convertDuotone();
-}
-
-// Function to download the image
-function downloadImage() {
-    const link = document.createElement('a');
-    link.href = fullSizeImageUrl;
-    link.download = 'duotone_image.png';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
 }
 
 // Run initial conversion on page load
