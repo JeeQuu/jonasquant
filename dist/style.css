@@ -115,9 +115,9 @@ img {
 }
 
 .logo {
-    max-width: 60%;
+    max-width: 45%;
     height: auto;
-    margin-bottom: 1px;
+    margin-bottom: -15px;
 }
 
 .instructions {
@@ -128,8 +128,8 @@ img {
 
 .tilted-image {
     position: absolute;
-    left: 10%;
-    top: -320px;
+    left: 200%;
+    top: -120px;
     width: 70px;
     transform: rotate(-11deg) translateX(-50%);
     z-index: 0;
