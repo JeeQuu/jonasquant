@@ -11,8 +11,8 @@ appId: "1:323096951218:web:27f70f8ec5fa2f05608cab"
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-// Initialize Firestore
-const db = firebase.firestore();
+// Initialize Realtime Database
+const db = firebase.database();
 
 // Function to submit a high score
 function submitHighScore(name, score) {
