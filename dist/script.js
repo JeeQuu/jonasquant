@@ -17,18 +17,26 @@ const db = firebase.firestore();
 // Function to submit a high score
 function submitHighScore(name, score) {
     console.log("Attempting to submit high score:", name, score);
-    return db.collection("highScores").add({
-        name: name,
-        score: score,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    })
-    .then(() => {
-        console.log("High score submitted successfully");
-        return Promise.resolve();
-    })
-    .catch((error) => {
-        console.error("Error submitting high score: ", error);
-        return Promise.reject(error);
+    return new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+            reject(new Error("Submission timeout"));
+        }, 10000); // 10 second timeout
+
+        db.collection("highScores").add({
+            name: name,
+            score: score,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+            clearTimeout(timeout);
+            console.log("High score submitted successfully");
+            resolve();
+        })
+        .catch((error) => {
+            clearTimeout(timeout);
+            console.error("Error submitting high score: ", error);
+            reject(error);
+        });
     });
 }
 
