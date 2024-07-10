@@ -1,31 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Happifier by Quant</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <title>Babylon.js Game</title>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  
+
+  
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  
 </head>
 <body>
-    <div class="container">
-        <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718012552/Untitled_Artwork_f7jjtt.png" alt="Subtitle" class="logo">
-        <p class="instructions">
-            1. Upload your image <br>
-            2. Use one of the buttons to find your dream combo <br>
-            3. Longpress and save to photos <br>
-            4. Post the image on your Instagram story and tag @jonasquant and you have now entered the competition
-        </p>
-        <input type="file" id="imageInput" accept="image/*">
-        <div class="buttons">
-            <button id="invertButton" onclick="invertDuotone()">Invert</button>
-            <button id="fullGloryButton" onclick="fullGlory()">FULL GLORY</button>
-        </div>
-        <canvas id="canvas" style="display:none;"></canvas>
-        <div class="result-container">
-            <img id="resultImage" src="">
-            <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1718020329/IMG_0424_bchwgu.jpg" alt="Tilted Image" class="tilted-image" id="tiltedImage">
-        </div>
+    <canvas id="renderCanvas"></canvas>
+    <button id="startButton">Start Game</button>
+    <div id="scoreDisplay">Score: 0</div>
+    <div id="energyMeterContainer">
+        <div id="energyMeter"></div>
     </div>
-    <script src="script.js"></script>
+    <audio id="gameAudio" loop>
+        <source src="https://res.cloudinary.com/dakoxedxt/video/upload/v1719689901/shyboy_fmix5_qwsnxz.mp3" type="audio/mpeg">
+    </audio>
 </body>
 </html>
