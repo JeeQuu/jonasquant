@@ -42,13 +42,17 @@ function submitHighScore(name, score) {
 
 // Function to get high scores
 function getHighScores() {
-return db.collection("highScores")
-.orderBy("score", "desc")
-.limit(10)
-.get()
-.then((querySnapshot) => {
-return querySnapshot.docs.map(doc => doc.data());
-});
+    return db.ref('highScores')
+        .orderByChild('score')
+        .limitToLast(10)
+        .once('value')
+        .then((snapshot) => {
+            const scores = [];
+            snapshot.forEach((childSnapshot) => {
+                scores.push(childSnapshot.val());
+            });
+            return scores.reverse(); // Reverse to get descending order
+        });
 }
 
 
