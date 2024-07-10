@@ -171,6 +171,7 @@ function checkHighScore(finalScore) {
 }
 
 
+
 function showHighScores() {
     console.log("Showing high scores");
     const loadingDiv = document.createElement('div');
