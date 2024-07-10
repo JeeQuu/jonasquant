@@ -270,9 +270,26 @@ let rotationAngle = 0;
 
 function setupCamera() {
     camera = new BABYLON.ArcRotateCamera("camera", Math.PI, Math.PI / 3, 25, new BABYLON.Vector3(0, 0, 0), scene);
-    camera.upperBetaLimit = Math.PI / 2.2;
+    camera.setTarget(character); // Assuming 'character' is your robot
+    camera.attachControl(canvas, true);
     camera.lowerRadiusLimit = 15;
     camera.upperRadiusLimit = 40;
+
+    // Adjust camera based on screen orientation
+    window.addEventListener('resize', adjustCameraForOrientation);
+    adjustCameraForOrientation();
+}
+
+function adjustCameraForOrientation() {
+    if (window.innerHeight > window.innerWidth) {
+        // Portrait mode
+        camera.radius = 30;
+        camera.beta = Math.PI / 2.5;
+    } else {
+        // Landscape mode
+        camera.radius = 25;
+        camera.beta = Math.PI / 3;
+    }
 }
 function bezierEasing(t) {
     return t * t * (3.0 - 2.0 * t);
