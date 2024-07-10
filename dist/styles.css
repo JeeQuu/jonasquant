@@ -9,7 +9,7 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
-    background-color: #f8d7da; /* Light pink background */
+    background-color: #f8d7da;
 }
 
 #renderCanvas {
@@ -24,9 +24,9 @@ html, body {
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 15px 30px;
-    font-size: 24px;
+    font-size: 5vmin;
     cursor: pointer;
-    background-color: #ff69b4; /* Hot pink */
+    background-color: #ff69b4;
     color: white;
     border: none;
     border-radius: 5px;
@@ -39,7 +39,7 @@ html, body {
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 36px;
+    font-size: 6vmin;
     color: white;
     background-color: rgba(0, 0, 0, 0.5);
     padding: 10px 20px;
@@ -49,10 +49,11 @@ html, body {
 
 #energyMeterContainer {
     position: absolute;
-    top: 80px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    width: 50%;
+    width: 80%;
+    max-width: 400px;
     height: 20px;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 10px;
@@ -62,7 +63,7 @@ html, body {
 #energyMeter {
     width: 100%;
     height: 100%;
-    background-color: #00ffff; /* Cyan */
+    background-color: #00ffff;
     transition: width 0.3s ease-out;
 }
 
@@ -71,15 +72,15 @@ html, body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 48px;
+    font-size: 8vmin;
     font-weight: 700;
-    color: #ffd700; /* Gold */
+    color: #ffd700;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     transition: opacity 0.5s ease-out, transform 0.5s ease-out;
     opacity: 0;
 }
 
-#highScoreDisplay {
+#highScoreDisplay, #gameOverText, #loadingHighScores, #highScoreError {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -89,54 +90,13 @@ html, body {
     padding: 20px;
     border-radius: 10px;
     text-align: center;
-}
-
-#highScoreDisplay h2 {
-    margin-top: 0;
-    font-weight: 700;
-}
-
-#highScoreDisplay ol {
-    padding-left: 20px;
-    list-style-type: none;
-}
-
-#highScoreDisplay li {
-    margin-bottom: 5px;
+    font-size: 4vmin;
 }
 
 #gameOverText {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 72px;
+    font-size: 10vmin;
     font-weight: 700;
-    color: #ff4500; /* OrangeRed */
+    color: #ff4500;
     text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
-}
-
-#loadingHighScores {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 24px;
-    color: white;
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 15px;
-    border-radius: 10px;
-}
-
-#highScoreError {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 18px;
-    color: #ff4500; /* OrangeRed */
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
+    background-color: transparent;
 }
