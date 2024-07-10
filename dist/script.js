@@ -336,10 +336,13 @@ async function loadCharacterModel() {
 function gameOver() {
     if (!isGameStarted) return; // Prevent multiple calls
     isGameStarted = false;
-    audio.pause();
+    
+    console.log("Game over function called");
+
+    // Stop gameplay elements
     walkAnimation.stop();
     idleAnimation.stop();
-    clearInterval(cameraChangeInterval); // Clear any ongoing intervals
+    clearInterval(cameraChangeInterval);
 
     console.log("Playing fall animation");
     if (fallAnimation) {
@@ -348,13 +351,15 @@ function gameOver() {
         fallAnimation.start(false, 1.0, fallAnimation.from, fallAnimation.to, false);
 
         fallAnimation.onAnimationEndObservable.addOnce(() => {
-            console.log("Fall animation ended, transitioning to game over state");
-            showGameOverScreen();
+            console.log("Fall animation ended, checking high score");
+            checkHighScore(Math.floor(score));
         });
     } else {
-        console.error("Fall animation not found, skipping to game over screen");
-        showGameOverScreen();
+        console.error("Fall animation not found, skipping to high score check");
+        checkHighScore(Math.floor(score));
     }
+
+    // Don't pause the audio here, let it continue playing
 }
 
 function showGameOverScreen() {
