@@ -22,10 +22,10 @@ function submitHighScore(name, score) {
             reject(new Error("Submission timeout"));
         }, 10000); // 10 second timeout
 
-        db.collection("highScores").add({
+        db.ref('highScores').push({
             name: name,
             score: score,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            timestamp: firebase.database.ServerValue.TIMESTAMP
         })
         .then(() => {
             clearTimeout(timeout);
