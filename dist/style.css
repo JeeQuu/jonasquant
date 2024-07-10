@@ -1,12 +1,83 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+html, body {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8d7da; /* Light pink background */
+}
+
+#renderCanvas {
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+#startButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 15px 30px;
+    font-size: 24px;
+    cursor: pointer;
+    background-color: #ff69b4; /* Hot pink */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+}
+
+#scoreDisplay {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 36px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+#energyMeterContainer {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 20px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#energyMeter {
+    width: 100%;
+    height: 100%;
+    background-color: #00ffff; /* Cyan */
+    transition: width 0.3s ease-out;
+}
+
+#feedbackDisplay {
+    position: absolute;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 48px;
-    font-weight: bold;
-    color: peachpuff;
+    font-weight: 700;
+    color: #ffd700; /* Gold */
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     transition: opacity 0.5s ease-out, transform 0.5s ease-out;
     opacity: 0;
 }
+
 #highScoreDisplay {
     position: absolute;
     top: 50%;
@@ -21,23 +92,52 @@
 
 #highScoreDisplay h2 {
     margin-top: 0;
+    font-weight: 700;
 }
 
 #highScoreDisplay ol {
     padding-left: 20px;
+    list-style-type: none;
 }
 
-function checkHighScore(finalScore) {
-    console.log("Checking high score:", finalScore);
-    const lowestHighScore = highScores.length < MAX_HIGH_SCORES ? 0 : highScores[highScores.length - 1].score;
-    if (finalScore > lowestHighScore || highScores.length < MAX_HIGH_SCORES) {
-        const name = prompt("You got a high score! Enter your name:");
-        if (name) {
-            highScores.push({ name, score: finalScore });
-            highScores.sort((a, b) => b.score - a.score);
-            if (highScores.length > MAX_HIGH_SCORES) highScores.pop();
-            saveHighScores();
-        }
-    }
-    showHighScores();
+#highScoreDisplay li {
+    margin-bottom: 5px;
 }
+
+#gameOverText {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 72px;
+    font-weight: 700;
+    color: #ff4500; /* OrangeRed */
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+}
+
+#loadingHighScores {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+#highScoreError {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    color: #ff4500; /* OrangeRed */
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+
