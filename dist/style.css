@@ -1,156 +1,43 @@
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    background-color: #EAC302;
-    color: #000000;
-    font-family: Arial, sans-serif;
-    overflow: hidden;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    font-weight: bold;
+    color: peachpuff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    opacity: 0;
 }
-
-body {
-    text-align: center;
-    position: relative;
-    padding-top: 29px;
-}
-
-input, .buttons {
-    margin: 1px;
-}
-
-.buttons {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    z-index: 10;
-    position: relative;
-}
-
-button, #imageInput {
-    margin: 15px;
-    padding: 3px;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    z-index: 10;
-    position: relative;
-    background-color: #8E44AD; /* Button color */
-    color: #000000; /* Text color */
-}
-
-#invertButton {
-    background-color: #DD67B6;
-    color: #FFFFFF;
-}
-
-#fullGloryButton {
-    background-color: #67DCD1;
-    color: #FFFFFF;
-}
-
-#imageInput {
-    display: inline-block;
-    padding: 0.35em 1.2em;
-    border: 0.1em solid #FFFFFF;
-    margin: 0 0.3em 0.3em 0;
-    border-radius: 0.12em;
-    box-sizing: border-box;
-    text-decoration: none;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 300;
-    color: #FFFFFF;
-    text-align: center;
-    transition: all 0.2s;
-    background-color: #8E44AD; /* Match the download button color */
-    cursor: pointer;
-}
-
-#imageInput:hover {
-    background-color: #6C3483; /* Slightly darker shade for hover */
-}
-
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 120%;
-    max-width: 600px;
-    margin: 0 auto;
-    z-index: 10;
-    position: relative;
-}
-
-.result-container {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-    width: 70%;
-    z-index: 10;
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-    margin-top: -25px;
-}
-
-.floating-image {
+#highScoreDisplay {
     position: absolute;
-    will-change: transform;
-    animation: rotate infinite linear;
-    z-index: 5;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
 }
 
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+#highScoreDisplay h2 {
+    margin-top: 0;
 }
 
-.logo {
-    max-width: 45%;
-    height: auto;
-    margin-bottom: -15px;
+#highScoreDisplay ol {
+    padding-left: 20px;
 }
 
-.instructions {
-    font-size: 16px;
-    color: #000000;
-    margin-bottom: 20px;
-}
-
-.tilted-image {
-    position: absolute;
-    left: 100%;
-    top: -100px;
-    width: 70px;
-    transform: rotate(-11deg) translateX(-50%);
-    z-index: 0;
-}
-
-@media (max-width: 768px) {
-    .tilted-image {
-        width: 70px;
-        top: 20px;
+function checkHighScore(finalScore) {
+    console.log("Checking high score:", finalScore);
+    const lowestHighScore = highScores.length < MAX_HIGH_SCORES ? 0 : highScores[highScores.length - 1].score;
+    if (finalScore > lowestHighScore || highScores.length < MAX_HIGH_SCORES) {
+        const name = prompt("You got a high score! Enter your name:");
+        if (name) {
+            highScores.push({ name, score: finalScore });
+            highScores.sort((a, b) => b.score - a.score);
+            if (highScores.length > MAX_HIGH_SCORES) highScores.pop();
+            saveHighScores();
+        }
     }
-    .logo {
-        max-width: 10%;
-    }
-}
-
-@media (max-width: 480px) {
-    .tilted-image {
-        width: 60px;
-        top: 10px;
-    }
-    .logo {
-        max-width: 80%;
-    }
+    showHighScores();
 }
