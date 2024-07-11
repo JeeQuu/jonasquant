@@ -22,25 +22,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Object pooling
-const objectPool = {
-    particles: [],
-    getParticle() {
-        return this.particles.pop() || this.createParticle();
-    },
-    releaseParticle(particle) {
-        if (this.particles.length < PARTICLE_POOL_SIZE) {
-            this.particles.push(particle);
-        } else {
-            particle.dispose();
-        }
-    },
-    createParticle() {
-        // Create and return a new particle
-        return new BABYLON.Particle(null);
-    }
-};
-
 // Helper function for creating UI elements
 function createUIElement(id, parentId = 'body') {
     const element = document.createElement('div');
@@ -49,37 +30,45 @@ function createUIElement(id, parentId = 'body') {
     return element;
 }
 
-// Optimized high score functions
-async function submitHighScore(name, score) {
+// Function to submit a high score
+function submitHighScore(name, score) {
     console.log("Attempting to submit high score:", name, score);
-    try {
-        await db.ref('highScores').push({
+    return new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+            reject(new Error("Submission timeout"));
+        }, 10000); // 10 second timeout
+
+        db.ref('highScores').push({
             name: name,
             score: score,
             timestamp: firebase.database.ServerValue.TIMESTAMP
+        })
+        .then(() => {
+            clearTimeout(timeout);
+            console.log("High score submitted successfully");
+            resolve();
+        })
+        .catch((error) => {
+            clearTimeout(timeout);
+            console.error("Error submitting high score: ", error);
+            reject(error);
         });
-        console.log("High score submitted successfully");
-    } catch (error) {
-        console.error("Error submitting high score: ", error);
-        throw error;
-    }
+    });
 }
 
-async function getHighScores() {
-    try {
-        const snapshot = await db.ref('highScores')
-            .orderByChild('score')
-            .limitToLast(10)
-            .once('value');
-        const scores = [];
-        snapshot.forEach((childSnapshot) => {
-            scores.push(childSnapshot.val());
+// Function to get high scores
+function getHighScores() {
+    return db.ref('highScores')
+        .orderByChild('score')
+        .limitToLast(10)
+        .once('value')
+        .then((snapshot) => {
+            const scores = [];
+            snapshot.forEach((childSnapshot) => {
+                scores.push(childSnapshot.val());
+            });
+            return scores.reverse(); // Reverse to get descending order
         });
-        return scores.reverse();
-    } catch (error) {
-        console.error("Error fetching high scores:", error);
-        throw error;
-    }
 }
 
 // DOM Elements
@@ -103,7 +92,10 @@ let lastTime = 0;
 // Babylon.js objects
 let engine, scene, camera;
 let character, walkAnimation, idleAnimation, fallAnimation;
+
+// Particle system
 let particleSystem;
+const particlePool = [];
 
 // Animation states
 const AnimationStates = {
@@ -115,7 +107,8 @@ let currentAnimationState = AnimationStates.IDLE;
 
 // Initialize the engine
 function initializeEngine() {
-    engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+    engine = new BABYLON.Engine(canvas, true);
+    engine.enableOfflineSupport = false; // Disable offline caching
 }
 
 // Set animation state
@@ -145,7 +138,7 @@ function setAnimationState(newState) {
 
 // Game over function
 function gameOver() {
-    if (!isGameStarted) return;
+    if (!isGameStarted) return; // Prevent multiple calls
     isGameStarted = false;
 
     console.log("Playing fall animation");
@@ -176,23 +169,29 @@ const createScene = async function () {
     scene.clearColor = new BABYLON.Color4(1, 0.7, 0.7, 1);
     scene.ambientColor = new BABYLON.Color3(0.1, 0.1, 0.1);
 
-    await Promise.all([
-        setupCamera(),
-        setupLights(),
-        loadCharacterModel(),
-        createBridge(scene),
-        createStars(scene)
-    ]);
+    setupCamera();
+    setupLights();
+    const bridge = await createBridge(scene);
+    bridge.position.y = -5;
 
+    await loadCharacterModel();
     setupCharacter();
+
     setupPostProcessing();
     setupSceneObservables();
+
+    createStars(scene);
+
+    // Enable the Babylon Inspector in debug mode
+    if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+        scene.debugLayer.show();
+    }
 
     return scene;
 };
 
 // Camera setup
-const cameraPositions = [
+let cameraPositions = [
     new BABYLON.Vector3(0, 15, -25),
     new BABYLON.Vector3(15, 10, -10),
     new BABYLON.Vector3(-15, 10, -10)
@@ -231,13 +230,13 @@ function updateCameraPosition(deltaTime) {
                 lastCameraUpdateTime = currentTime;
             }
             let targetPosition = cameraPositions[currentCameraIndex].add(character.position);
-            camera.position = BABYLON.Vector3.Lerp(camera.position, targetPosition, 0.1 * deltaTime * 60);
+            camera.position = BABYLON.Vector3.Lerp(camera.position, targetPosition, deltaTime * 2);
         } else {
-            rotationAngle += 0.01 * deltaTime * 60;
+            rotationAngle += deltaTime * 0.5;
             let x = Math.sin(rotationAngle) * 25;
             let z = Math.cos(rotationAngle) * 25;
             let targetPosition = new BABYLON.Vector3(x, 15, z).add(character.position);
-            camera.position = BABYLON.Vector3.Lerp(camera.position, targetPosition, 0.1 * deltaTime * 60);
+            camera.position = BABYLON.Vector3.Lerp(camera.position, targetPosition, deltaTime * 2);
         }
         camera.setTarget(character.position);
     }
@@ -286,7 +285,6 @@ function setupCharacter() {
     character.position.y = -4.5;
     character.rotation.y = Math.PI / 2;
     setAnimationState(AnimationStates.IDLE);
-    camera.lockedTarget = character;
 }
 
 // Set up post-processing
@@ -306,12 +304,15 @@ function setupSceneObservables() {
     canvas.addEventListener('touchstart', handleInput);
 }
 
-// Main game loop using requestAnimationFrame
+// Main game loop
 function gameLoop(currentTime) {
     const deltaTime = (currentTime - lastTime) / 1000;
     lastTime = currentTime;
 
-    updateGame(deltaTime);
+    if (isGameStarted) {
+        updateGame(deltaTime);
+    }
+
     scene.render();
 
     requestAnimationFrame(gameLoop);
@@ -319,21 +320,20 @@ function gameLoop(currentTime) {
 
 // Update game state
 function updateGame(deltaTime) {
-    if (isGameStarted) {
-        updateCharacterMovement(deltaTime);
-        updateEnergy(deltaTime);
-        updateScore(deltaTime);
-        updateEnergyMeter();
-        checkGameOver();
-        updateCameraPosition(deltaTime);
-    }
-    updateBackgroundGradient(scene, character.position.z);
+    updateCharacterMovement(deltaTime);
+    updateEnergy(deltaTime);
+    updateScore(deltaTime);
+    updateEnergyMeter();
+    checkGameOver();
+    updateCameraPosition(deltaTime);
+    moveStars(deltaTime);
+    updateBackgroundGradient();
 }
 
 // Update character movement
 function updateCharacterMovement(deltaTime) {
     if (isMoving && isMusicPlaying) {
-        character.position.z += characterWalkSpeed * deltaTime * 60;
+        character.position.z += characterWalkSpeed * deltaTime * 60; // Adjust for 60 FPS
     }
 }
 
@@ -345,9 +345,7 @@ function updateEnergy(deltaTime) {
         } else if (isMoving && !isMusicPlaying) {
             energy = Math.max(energy - ENERGY_DECREASE_RATE * deltaTime * 60, 0);
         }
-        console.log("Current energy:", energy);
     }
-    updateEnergyMeter();
 }
 
 // Check for game over
@@ -373,45 +371,47 @@ function handleInput() {
             const reactionTime = (Date.now() - musicStopTime) / 1000;
             scoreMultiplier = calculateMultiplier(reactionTime);
             score += 100 * scoreMultiplier;
-            updateScore();
             showFeedback(reactionTime);
             triggerFeedbackParticles();
             createMultiplierPopup(scoreMultiplier);
         }
         
-        updateEnergy();
+        updateEnergy(1/60); // Assume 60 FPS for immediate update
         updateEnergyMeter();
     }
 }
 
-// Create bridge using instancing for better performance
-function createBridge(scene) {
+// Create bridge (using instancing for better performance)
+async function createBridge(scene) {
     const bridgeLength = 2000;
     const bridgeWidth = 5;
     const segmentLength = 10; // Length of each bridge segment
-    const instanceCount = Math.ceil(bridgeLength / segmentLength);
+    const segmentCount = bridgeLength / segmentLength;
 
     const bridgeSegment = BABYLON.MeshBuilder.CreateBox("bridgeSegment", {width: bridgeWidth, height: 1, depth: segmentLength}, scene);
-    bridgeSegment.isVisible = false;
+    
+    const shaderMaterial = new BABYLON.ShaderMaterial("shader", scene, {
+        vertex: "custom",
+        fragment: "custom",
+    },
+    {
+        attributes: ["position", "normal", "uv"],
+        uniforms: ["world", "worldView", "worldViewProjection", "view", "projection", "time"]
+    });
 
-    const bridgeInstance = new BABYLON.InstancedMesh("bridge", bridgeSegment);
-    bridgeInstance.position.y = -5;
+    BABYLON.Effect.ShadersStore["customVertexShader"] = `
+        precision highp float;
+        attribute vec3 position;
+        attribute vec2 uv;
+        uniform mat4 worldViewProjection;
+        varying vec2 vUV;
+        void main(void) {
+            gl_Position = worldViewProjection * vec4(position, 1.0);
+            vUV = uv;
+        }
+    `;
 
-    const instances = [];
-    for (let i = 0; i < instanceCount; i++) {
-        const instance = bridgeSegment.createInstance("bridgeInstance_" + i);
-        instance.position.z = i * segmentLength;
-        instances.push(instance);
-    }
-
-    const shaderMaterial = createBridgeShaderMaterial(scene);
-    instances.forEach(instance => instance.material = shaderMaterial);
-
-    return bridgeInstance;
-}
-
-// Create shader material for the
-    BABYLON.Effect.ShadersStore["customFragmentShader"] = `
+        BABYLON.Effect.ShadersStore["customFragmentShader"] = `
         precision highp float;
         varying vec2 vUV;
         uniform float time;
