@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shy Boy Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babylonjs/5.0.0/babylon.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <audio id="gameAudio" loop>
+        <source src="https://res.cloudinary.com/dakoxedxt/video/upload/v1719689901/shyboy_fmix5_qwsnxz.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <button id="startButton">Start Game</button>
+    <div id="scoreDisplay"></div>
+    <div id="energyMeterContainer">
+        <div id="energyMeter"></div>
+    </div>
+    <div id="feedbackDisplay"></div>
+    <div id="highScoreDisplay"></div>
+    <div id="fpsDisplay"></div>
+    <script src="script.js"></script>
+</body>
+</html>
