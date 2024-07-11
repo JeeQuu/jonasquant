@@ -6,6 +6,8 @@ const ENERGY_DECREASE_RATE = 1.2;
 const SCORE_INCREMENT = 0.1;
 const MAX_REACTION_TIME = 1.5;
 
+console.log("BABYLON loaded:", typeof BABYLON !== 'undefined');
+
 // Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyD3IZlrpusRfIa8VgmYMqtt-UepWyTVOy4",
@@ -53,8 +55,10 @@ let currentAnimationState = AnimationStates.IDLE;
 
 // Initialize the engine
 function initializeEngine() {
+    console.log("Initializing engine...");
     engine = new BABYLON.Engine(canvas, true);
     engine.enableOfflineSupport = false;
+    console.log("Engine initialized.");
 }
 
 // Helper function for creating UI elements
@@ -110,6 +114,7 @@ function getHighScores() {
 function setAnimationState(newState) {
     if (newState === currentAnimationState) return;
     
+    console.log("Setting animation state to:", newState);
     switch(newState) {
         case AnimationStates.IDLE:
             walkAnimation.stop();
@@ -134,6 +139,7 @@ function setAnimationState(newState) {
 // Game over function
 function gameOver() {
     if (!isGameStarted) return;
+    console.log("Game over triggered");
     isGameStarted = false;
     audio.pause();
     audio.currentTime = 0;
@@ -148,6 +154,7 @@ function gameOver() {
 }
 
 function showGameOverScreen() {
+    console.log("Showing game over screen");
     const gameOverText = createUIElement('gameOverText');
     gameOverText.className = 'game-text';
     gameOverText.textContent = 'GAME OVER';
@@ -162,21 +169,34 @@ function showGameOverScreen() {
 
 // Create and set up the scene
 const createScene = async function () {
-    scene = new BABYLON.Scene(engine);
-    scene.clearColor = new BABYLON.Color4(1, 0.7, 0.7, 1);
-    scene.ambientColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+    try {
+        console.log("Creating scene...");
+        scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color4(1, 0.7, 0.7, 1);
+        scene.ambientColor = new BABYLON.Color3(0.1, 0.1, 0.1);
 
-    setupCamera();
-    setupLights();
-    const bridge = await createBridge(scene);
-    bridge.position.y = -5;
+        console.log("Setting up camera...");
+        setupCamera();
+        console.log("Setting up lights...");
+        setupLights();
+        console.log("Creating bridge...");
+        const bridge = await createBridge(scene);
+        bridge.position.y = -5;
 
-    await loadCharacterModel();
-    setupCharacter();
+        console.log("Loading character model...");
+        await loadCharacterModel();
+        console.log("Setting up character...");
+        setupCharacter();
 
-    createStars(scene);
+        console.log("Creating stars...");
+        createStars(scene);
 
-    return scene;
+        console.log("Scene creation complete.");
+        return scene;
+    } catch (error) {
+        console.error("Error in createScene:", error);
+        throw error;
+    }
 };
 
 // Camera setup
@@ -190,6 +210,7 @@ let lastCameraUpdateTime = 0;
 let rotationAngle = 0;
 
 function setupCamera() {
+    console.log("Setting up camera...");
     camera = new BABYLON.ArcRotateCamera("camera", Math.PI, Math.PI / 3, 25, new BABYLON.Vector3(0, 0, 0), scene);
     camera.setTarget(BABYLON.Vector3.Zero());
     camera.attachControl(canvas, true);
@@ -198,9 +219,11 @@ function setupCamera() {
 
     window.addEventListener('resize', adjustCameraForOrientation);
     adjustCameraForOrientation();
+    console.log("Camera setup complete.");
 }
 
 function adjustCameraForOrientation() {
+    console.log("Adjusting camera for orientation...");
     if (window.innerHeight > window.innerWidth) {
         camera.radius = 30;
         camera.beta = Math.PI / 2.5;
@@ -208,6 +231,7 @@ function adjustCameraForOrientation() {
         camera.radius = 25;
         camera.beta = Math.PI / 3;
     }
+    console.log("Camera adjusted.");
 }
 
 function updateCameraPosition(deltaTime) {
@@ -233,8 +257,10 @@ function updateCameraPosition(deltaTime) {
 
 // Lighting setup
 function setupLights() {
+    console.log("Setting up lights...");
     new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene).intensity = 1.5;
     new BABYLON.DirectionalLight("directionalLight", new BABYLON.Vector3(0, -1, 1), scene).intensity = 0.5;
+    console.log("Lights setup complete.");
 }
 
 // Load character model
@@ -271,13 +297,16 @@ async function loadCharacterModel() {
 
 // Set up character
 function setupCharacter() {
+    console.log("Setting up character...");
     character.position.y = -4.5;
     character.rotation.y = Math.PI / 2;
     setAnimationState(AnimationStates.IDLE);
+    console.log("Character setup complete.");
 }
 
 // Create bridge (using instancing for better performance)
 async function createBridge(scene) {
+    console.log("Creating bridge...");
     const bridgeLength = 2000;
     const bridgeWidth = 5;
     const segmentLength = 10;
@@ -344,11 +373,13 @@ async function createBridge(scene) {
         shaderMaterial.setFloat("time", time);
     });
 
+    console.log("Bridge creation complete.");
     return bridgeSegment;
 }
 
 // Create stars using instancing
 function createStars(scene) {
+    console.log("Creating stars...");
     const starCount = 1000;
     const starMesh = BABYLON.MeshBuilder.CreateSphere("star", {diameter: 0.1}, scene);
     const starMaterial = new BABYLON.StandardMaterial("starMaterial", scene);
@@ -369,6 +400,7 @@ function createStars(scene) {
     }
 
     starMesh.thinInstanceSetBuffer("matrix", matrices.map(m => m.asArray()).flat(), 16);
+    console.log("Stars creation complete.");
 }
 
 // Move stars
@@ -392,7 +424,6 @@ function moveStars(deltaTime) {
 }
 
 // Update background gradient
-// Update background gradient
 function updateBackgroundGradient() {
     const t = (character.position.z % 1000) / 1000;
     const r = 1 - t * 0.5, g = 0.7 - t * 0.7, b = 0.7 - t * 0.7;
@@ -403,6 +434,7 @@ function updateBackgroundGradient() {
 
 // Start game
 function startGame() {
+    console.log("Starting game...");
     isGameStarted = true;
     startButton.style.display = 'none';
     setupUI();
@@ -413,18 +445,22 @@ function startGame() {
     scheduleNextPause();
     lastTime = performance.now();
     requestAnimationFrame(gameLoop);
+    console.log("Game started successfully.");
 }
 
 // Setup UI
 function setupUI() {
+    console.log("Setting up UI...");
     scoreDisplay = createUIElement('scoreDisplay');
     energyMeter = createUIElement('energyMeter', 'energyMeterContainer');
     feedbackDisplay = createUIElement('feedbackDisplay');
     if (highScoreDisplay) highScoreDisplay.style.display = 'none';
+    console.log("UI setup complete.");
 }
 
 // Reset game state
 function resetGameState() {
+    console.log("Resetting game state...");
     score = 0;
     energy = 100;
     isMoving = true;
@@ -432,17 +468,20 @@ function resetGameState() {
     scoreMultiplier = 1;
     musicStopCount = 0;
     character.position.set(0, -4.5, 0);
+    console.log("Game state reset complete.");
 }
 
 // Pause music
 function pauseMusic() {
     if (musicStopCount < MAX_MUSIC_STOPS) {
+        console.log("Pausing music...");
         const pauseDuration = Math.floor(Math.random() * 4000) + 2000;
         audio.pause();
         isMusicPlaying = false;
         musicStopTime = Date.now();
         musicStopCount++;
         setTimeout(() => {
+            console.log("Resuming music...");
             audio.play().catch(e => console.error("Error playing audio:", e));
             isMusicPlaying = true;
             scheduleNextPause();
@@ -552,6 +591,7 @@ function createMultiplierPopup(multiplier) {
 // Handle input (keyboard or touch)
 function handleInput() {
     if (isGameStarted) {
+        console.log("Input detected, toggling movement...");
         isMoving = !isMoving;
         setAnimationState(isMoving ? AnimationStates.WALK : AnimationStates.IDLE);
         
@@ -583,6 +623,7 @@ function checkGameOver() {
 
 // Handle high score
 function handleHighScore(finalScore) {
+    console.log("Handling high score...");
     getHighScores().then(highScores => {
         if (highScores.length < MAX_HIGH_SCORES || finalScore > highScores[highScores.length - 1].score) {
             const name = prompt("Congratulations! You got a high score! Enter your name:");
@@ -608,6 +649,7 @@ function handleHighScore(finalScore) {
 
 // Show high scores
 function showHighScores() {
+    console.log("Showing high scores...");
     const loadingDiv = createUIElement('loadingHighScores');
     loadingDiv.textContent = 'Loading high scores...';
 
@@ -679,8 +721,11 @@ function updateCharacterMovement(deltaTime) {
 // Main function
 async function main() {
     try {
+        console.log("Starting main function...");
         initializeEngine();
+        console.log("Creating scene...");
         const scene = await createScene();
+        console.log("Scene created successfully.");
         engine.runRenderLoop(() => scene.render());
         startButton.addEventListener('click', startGame);
         window.addEventListener("resize", () => {
@@ -697,13 +742,13 @@ async function main() {
         document.body.style.margin = '0';
         document.body.style.padding = '0';
         document.body.style.overflow = 'hidden';
+        
+        console.log("Game setup complete. Ready to start.");
     } catch (error) {
-        console.error("Error starting game:", error);
+        console.error("Error in main function:", error);
         alert("An error occurred while starting the game. Please check the console for more details.");
     }
 }
 
 // Start the game
 main().catch((error) => console.error("Error starting game:", error));
-
-document.head.innerHTML += '<link rel="stylesheet" href="styles.css">';
