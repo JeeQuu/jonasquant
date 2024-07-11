@@ -1,21 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
- 
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
-html, body {
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
+body, html {
     margin: 0;
     padding: 0;
-    font-family: 'Roboto', sans-serif;
-    background-color: #f8d7da;
+    overflow: hidden;
+    font-family: 'Press Start 2P', cursive;
 }
 
 #renderCanvas {
-    width: 100%;
-    height: 100%;
-    touch-action: none;
+    width: 100vw;
+    height: 100vh;
+    display: block;
 }
 
 #startButton {
@@ -23,47 +18,40 @@ html, body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    padding: 15px 30px;
-    font-size: 5vmin;
+    padding: 10px 20px;
+    font-size: 20px;
     cursor: pointer;
-    background-color: #ff69b4;
+    background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 700;
+    font-family: 'Press Start 2P', cursive;
 }
 
 #scoreDisplay {
     position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 6vmin;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
     color: white;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 #energyMeterContainer {
     position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    max-width: 400px;
+    bottom: 10px;
+    left: 10px;
+    width: 200px;
     height: 20px;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: #333;
     border-radius: 10px;
     overflow: hidden;
 }
 
 #energyMeter {
-    width: 100%;
     height: 100%;
-    background-color: #00ffff;
+    background-color: #4CAF50;
+    width: 100%;
     transition: width 0.3s ease-out;
 }
 
@@ -72,15 +60,14 @@ html, body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 8vmin;
-    font-weight: 700;
-    color: #ffd700;
+    font-size: 36px;
+    color: yellow;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
     opacity: 0;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
 }
 
-#highScoreDisplay, #gameOverText, #loadingHighScores, #highScoreError {
+#highScoreDisplay {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -90,13 +77,35 @@ html, body {
     padding: 20px;
     border-radius: 10px;
     text-align: center;
-    font-size: 4vmin;
 }
 
-#gameOverText {
-    font-size: 10vmin;
-    font-weight: 700;
-    color: #ff4500;
-    text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
-    background-color: transparent;
+#highScoreDisplay h2 {
+    margin-top: 0;
+}
+
+#highScoreDisplay ol {
+    padding-left: 20px;
+    text-align: left;
+}
+
+.multiplier-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    color: gold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    opacity: 1;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.game-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 72px;
+    color: red;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
