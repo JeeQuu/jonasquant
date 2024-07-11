@@ -1,18 +1,69 @@
+// Constants
 const MAX_MUSIC_STOPS = 14;
 const MAX_HIGH_SCORES = 10;
+const ENERGY_INCREASE_RATE = 0.15;
+const ENERGY_DECREASE_RATE = 1.2;
+const SCORE_INCREMENT = 0.1;
+const MAX_REACTION_TIME = 1.5;
+
+// Firebase configuration
 const firebaseConfig = {
-apiKey: "AIzaSyD3IZlrpusRfIa8VgmYMqtt-UepWyTVOy4",
-authDomain: "shy-score.firebaseapp.com",
-databaseURL: "https://shy-score-default-rtdb.europe-west1.firebasedatabase.app",
-projectId: "shy-score",
-storageBucket: "shy-score.appspot.com",
-messagingSenderId: "323096951218",
-appId: "1:323096951218:web:27f70f8ec5fa2f05608cab"
+    apiKey: "AIzaSyD3IZlrpusRfIa8VgmYMqtt-UepWyTVOy4",
+    authDomain: "shy-score.firebaseapp.com",
+    databaseURL: "https://shy-score-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "shy-score",
+    storageBucket: "shy-score.appspot.com",
+    messagingSenderId: "323096951218",
+    appId: "1:323096951218:web:27f70f8ec5fa2f05608cab"
 };
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-// Initialize Realtime Database
 const db = firebase.database();
+
+// DOM Elements
+const canvas = document.getElementById("renderCanvas");
+const startButton = document.getElementById("startButton");
+const audio = document.getElementById("gameAudio");
+let scoreDisplay, energyMeter, feedbackDisplay, highScoreDisplay;
+
+// Game state
+let isGameStarted = false;
+let isMoving = true;
+let score = 0;
+let isMusicPlaying = true;
+let energy = 100;
+let musicStopTime = 0;
+let scoreMultiplier = 1;
+let musicStopCount = 0;
+let characterWalkSpeed = 0.1;
+let lastTime = 0;
+
+// Babylon.js objects
+let engine, scene, camera;
+let character, walkAnimation, idleAnimation, fallAnimation;
+
+// Animation states
+const AnimationStates = {
+    IDLE: 'idle',
+    WALK: 'walk',
+    FALL: 'fall'
+};
+let currentAnimationState = AnimationStates.IDLE;
+
+// Initialize the engine
+function initializeEngine() {
+    engine = new BABYLON.Engine(canvas, true);
+    engine.enableOfflineSupport = false;
+}
+
+// Helper function for creating UI elements
+function createUIElement(id, parentId = 'body') {
+    const element = document.createElement('div');
+    element.id = id;
+    (parentId === 'body' ? document.body : document.getElementById(parentId)).appendChild(element);
+    return element;
+}
 
 // Function to submit a high score
 function submitHighScore(name, score) {
@@ -20,7 +71,7 @@ function submitHighScore(name, score) {
     return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
             reject(new Error("Submission timeout"));
-        }, 10000); // 10 second timeout
+        }, 10000);
 
         db.ref('highScores').push({
             name: name,
@@ -51,218 +102,88 @@ function getHighScores() {
             snapshot.forEach((childSnapshot) => {
                 scores.push(childSnapshot.val());
             });
-            return scores.reverse(); // Reverse to get descending order
+            return scores.reverse();
         });
 }
 
-
-// DOM Elements
-const canvas = document.getElementById("renderCanvas");
-const startButton = document.getElementById("startButton");
-const audio = document.getElementById("gameAudio");
-let scoreDisplay, energyMeter, feedbackDisplay, highScoreDisplay;
-
-// Game state
-let isGameStarted = false;
-let isMoving = true;
-let score = 0;
-let isMusicPlaying = true;
-let energy = 100;
-let musicStopTime = 0;
-let scoreMultiplier = 1;
-let musicStopCount = 0;
-let highScores = [];
-let particleSystem;
-let feedbackParticles;
-let characterWalkSpeed = 0.1; // Adjust this value to change walking speed
-let cameraChangeInterval;
-
-// Babylon.js objects
-let engine, scene, camera;
-let character, walkAnimation, idleAnimation, fallAnimation;
-
-// Initialize the engine
-function initializeEngine() {
-    engine = new BABYLON.Engine(canvas, true);
+// Set animation state
+function setAnimationState(newState) {
+    if (newState === currentAnimationState) return;
+    
+    switch(newState) {
+        case AnimationStates.IDLE:
+            walkAnimation.stop();
+            fallAnimation.stop();
+            idleAnimation.start(true);
+            break;
+        case AnimationStates.WALK:
+            idleAnimation.stop();
+            fallAnimation.stop();
+            walkAnimation.start(true);
+            break;
+        case AnimationStates.FALL:
+            idleAnimation.stop();
+            walkAnimation.stop();
+            fallAnimation.start(false);
+            break;
+    }
+    
+    currentAnimationState = newState;
 }
 
 // Game over function
 function gameOver() {
-    if (!isGameStarted) return; // Prevent multiple calls
+    if (!isGameStarted) return;
     isGameStarted = false;
     audio.pause();
-    walkAnimation.stop();
-    idleAnimation.stop();
-    clearInterval(cameraChangeInterval); // Clear any ongoing intervals
+    audio.currentTime = 0;
 
     console.log("Playing fall animation");
-    fallAnimation.start(false);  // Play once
+    setAnimationState(AnimationStates.FALL);
 
     fallAnimation.onAnimationEndObservable.addOnce(() => {
         console.log("Fall animation ended, transitioning to game over state");
-        fallAnimation.stop();
         showGameOverScreen();
     });
 }
-function createFeedbackParticles() {
-    if (particleSystem) {
-        particleSystem.dispose();
-    }
-    particleSystem = new BABYLON.ParticleSystem("particles", 2000, scene);
-    particleSystem.particleTexture = new BABYLON.Texture("https://www.babylonjs-playground.com/textures/flare.png", scene);
-    particleSystem.emitter = character; // the character mesh
-    particleSystem.minEmitBox = new BABYLON.Vector3(-1, 0, -1);
-    particleSystem.maxEmitBox = new BABYLON.Vector3(1, 2, 1);
-    particleSystem.color1 = new BABYLON.Color4(1, 1, 0, 1);
-    particleSystem.color2 = new BABYLON.Color4(1, 0.5, 0, 1);
-    particleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0);
-    particleSystem.minSize = 0.1;
-    particleSystem.maxSize = 0.5;
-    particleSystem.emitRate = 0;
-    particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-    particleSystem.gravity = new BABYLON.Vector3(0, -9.81, 0);
-    particleSystem.direction1 = new BABYLON.Vector3(-1, 8, 1);
-    particleSystem.direction2 = new BABYLON.Vector3(1, 8, -1);
-    particleSystem.minEmitPower = 1;
-    particleSystem.maxEmitPower = 3;
-    particleSystem.updateSpeed = 0.01;
-}
-
-
-function forceAnimationChange() {
-    if (isMoving) {
-        walkAnimation.start(true, 1.0, walkAnimation.from, walkAnimation.to, false);
-        idleAnimation.stop();
-    } else {
-        idleAnimation.start(true, 1.0, idleAnimation.from, idleAnimation.to, false);
-        walkAnimation.stop();
-    }
-}
 
 function showGameOverScreen() {
-    const gameOverText = document.createElement('div');
-    gameOverText.id = 'gameOverText';
+    const gameOverText = createUIElement('gameOverText');
+    gameOverText.className = 'game-text';
     gameOverText.textContent = 'GAME OVER';
-    document.body.appendChild(gameOverText);
+
+    console.log("Game over screen displayed");
 
     setTimeout(() => {
-        checkHighScore(Math.floor(score));
-    }, 2000);  // Show game over text for 2 seconds before checking high score
+        gameOverText.remove();
+        handleHighScore(Math.floor(score));
+    }, 3000);
 }
 
-function checkHighScore(finalScore) {
-    console.log("Checking high score:", finalScore);
-    getHighScores().then(highScores => {
-        if (highScores.length < MAX_HIGH_SCORES || finalScore > highScores[highScores.length - 1].score) {
-            const name = prompt("Congratulations! You got a high score! Enter your name:");
-            if (name) {
-                console.log("Submitting high score for:", name);
-                submitHighScore(name, finalScore)
-                    .then(() => {
-                        console.log("High score submitted, showing high scores");
-                        showHighScores();
-                    })
-                    .catch(error => {
-                        console.error("Error submitting high score:", error);
-                        alert("Failed to submit high score. The game will continue.");
-                        showHighScores();
-                    });
-            } else {
-                console.log("No name entered, showing high scores");
-                showHighScores();
-            }
-        } else {
-            console.log("Score not high enough, showing high scores");
-            showHighScores();
-        }
-    }).catch(error => {
-        console.error("Error checking high scores:", error);
-        alert("Failed to check high scores. The game will continue.");
-        showHighScores();
-    });
-}
-
-
-
-function showHighScores() {
-    console.log("Showing high scores");
-    const loadingDiv = document.createElement('div');
-    loadingDiv.id = 'loadingHighScores';
-    loadingDiv.textContent = 'Loading high scores...';
-    document.body.appendChild(loadingDiv);
-
-    const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout')), 10000)
-    );
-
-    Promise.race([getHighScores(), timeoutPromise])
-        .then(highScores => {
-            console.log("High scores fetched:", highScores);
-            document.getElementById('loadingHighScores').remove();
-            if (document.getElementById('highScoreDisplay')) {
-                document.getElementById('highScoreDisplay').remove();
-            }
-
-            const highScoreDisplay = document.createElement('div');
-            highScoreDisplay.id = 'highScoreDisplay';
-            highScoreDisplay.innerHTML = '<h2>High Scores</h2>';
-            
-            if (highScores.length === 0) {
-                highScoreDisplay.innerHTML += '<p>No high scores yet. Be the first!</p>';
-            } else {
-                const list = document.createElement('ol');
-                highScores.forEach((score, index) => {
-                    const item = document.createElement('li');
-                    item.textContent = `${index + 1}. ${score.name}: ${score.score.toLocaleString()}`;
-                    list.appendChild(item);
-                });
-                highScoreDisplay.appendChild(list);
-            }
-
-            document.body.appendChild(highScoreDisplay);
-            startButton.textContent = 'Start Game';
-            startButton.style.display = 'block';
-        })
-        .catch(error => {
-            console.error("Error fetching high scores:", error);
-            document.getElementById('loadingHighScores').remove();
-            const errorDiv = document.createElement('div');
-            errorDiv.id = 'highScoreError';
-            errorDiv.textContent = 'Unable to load high scores. Please try again later.';
-            document.body.appendChild(errorDiv);
-            startButton.style.display = 'block';
-        });
-}
 // Create and set up the scene
 const createScene = async function () {
     scene = new BABYLON.Scene(engine);
     scene.clearColor = new BABYLON.Color4(1, 0.7, 0.7, 1);
     scene.ambientColor = new BABYLON.Color3(0.1, 0.1, 0.1);
 
-
-  
     setupCamera();
     setupLights();
-    createStars(scene);
-    const bridge = createBridge(scene);
+    const bridge = await createBridge(scene);
     bridge.position.y = -5;
 
     await loadCharacterModel();
     setupCharacter();
-  createFeedbackParticles();
 
-    setupPostProcessing();
-    setupSceneObservables();
-  
+    createStars(scene);
 
     return scene;
 };
 
 // Camera setup
 let cameraPositions = [
-    new BABYLON.Vector3(0, 15, -25),  // Behind and above
-    new BABYLON.Vector3(15, 10, -10), // Diagonal behind right
-    new BABYLON.Vector3(-15, 10, -10) // Diagonal behind left
+    new BABYLON.Vector3(0, 15, -25),
+    new BABYLON.Vector3(15, 10, -10),
+    new BABYLON.Vector3(-15, 10, -10)
 ];
 let currentCameraIndex = 0;
 let lastCameraUpdateTime = 0;
@@ -270,58 +191,52 @@ let rotationAngle = 0;
 
 function setupCamera() {
     camera = new BABYLON.ArcRotateCamera("camera", Math.PI, Math.PI / 3, 25, new BABYLON.Vector3(0, 0, 0), scene);
-    camera.setTarget(character); // Assuming 'character' is your robot
+    camera.setTarget(BABYLON.Vector3.Zero());
     camera.attachControl(canvas, true);
     camera.lowerRadiusLimit = 15;
     camera.upperRadiusLimit = 40;
 
-    // Adjust camera based on screen orientation
     window.addEventListener('resize', adjustCameraForOrientation);
     adjustCameraForOrientation();
 }
 
 function adjustCameraForOrientation() {
     if (window.innerHeight > window.innerWidth) {
-        // Portrait mode
         camera.radius = 30;
         camera.beta = Math.PI / 2.5;
     } else {
-        // Landscape mode
         camera.radius = 25;
         camera.beta = Math.PI / 3;
     }
 }
-function bezierEasing(t) {
-    return t * t * (3.0 - 2.0 * t);
-}
 
-function updateCameraPosition() {
+function updateCameraPosition(deltaTime) {
     const currentTime = Date.now();
     if (isGameStarted) {
         if (isMoving) {
-            if (currentTime - lastCameraUpdateTime > 5000) { // Change every 5 seconds
+            if (currentTime - lastCameraUpdateTime > 5000) {
                 currentCameraIndex = (currentCameraIndex + 1) % cameraPositions.length;
                 lastCameraUpdateTime = currentTime;
             }
             let targetPosition = cameraPositions[currentCameraIndex].add(character.position);
-            let t = bezierEasing((currentTime - lastCameraUpdateTime) / 5000);
-            camera.position = BABYLON.Vector3.Lerp(camera.position, targetPosition, t * 0.1);
+            camera.position = BABYLON.Vector3.Lerp(camera.position, targetPosition, deltaTime * 2);
         } else {
-            rotationAngle += 0.01;
+            rotationAngle += deltaTime * 0.5;
             let x = Math.sin(rotationAngle) * 25;
             let z = Math.cos(rotationAngle) * 25;
             let targetPosition = new BABYLON.Vector3(x, 15, z).add(character.position);
-            let t = bezierEasing((currentTime - lastCameraUpdateTime) / 2000);
-            camera.position = BABYLON.Vector3.Lerp(camera.position, targetPosition, t * 0.1);
+            camera.position = BABYLON.Vector3.Lerp(camera.position, targetPosition, deltaTime * 2);
         }
         camera.setTarget(character.position);
     }
 }
+
 // Lighting setup
 function setupLights() {
     new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene).intensity = 1.5;
     new BABYLON.DirectionalLight("directionalLight", new BABYLON.Vector3(0, -1, 1), scene).intensity = 0.5;
 }
+
 // Load character model
 async function loadCharacterModel() {
     console.log("Starting to load character model");
@@ -353,150 +268,22 @@ async function loadCharacterModel() {
         throw error;
     }
 }
-// GAMER OVER SCREEN
-function gameOver() {
-    if (!isGameStarted) return; // Prevent multiple calls
-    isGameStarted = false;
-    
-    console.log("Game over function called");
 
-    // Stop gameplay elements
-    walkAnimation.stop();
-    idleAnimation.stop();
-    clearInterval(cameraChangeInterval);
-
-    console.log("Playing fall animation");
-    if (fallAnimation) {
-        fallAnimation.stop();
-        fallAnimation.reset();
-        fallAnimation.start(false, 1.0, fallAnimation.from, fallAnimation.to, false);
-
-        fallAnimation.onAnimationEndObservable.addOnce(() => {
-            console.log("Fall animation ended, checking high score");
-            checkHighScore(Math.floor(score));
-        });
-    } else {
-        console.error("Fall animation not found, skipping to high score check");
-        checkHighScore(Math.floor(score));
-    }
-
-    // Don't pause the audio here, let it continue playing
-}
-
-function showGameOverScreen() {
-    const gameOverText = document.createElement('div');
-    gameOverText.id = 'gameOverText';
-    gameOverText.className = 'game-text';
-    gameOverText.textContent = 'GAME OVER';
-    document.body.appendChild(gameOverText);
-
-    console.log("Game over screen displayed");
-
-    // Wait for 3 seconds before checking high score
-    setTimeout(() => {
-        gameOverText.remove();
-        checkHighScore(Math.floor(score));
-    }, 3000);
-}
 // Set up character
 function setupCharacter() {
     character.position.y = -4.5;
     character.rotation.y = Math.PI / 2;
-    idleAnimation.start(true);
-    camera.lockedTarget = character;
+    setAnimationState(AnimationStates.IDLE);
 }
 
-// Set up post-processing
-function setupPostProcessing() {
-    const pipeline = new BABYLON.DefaultRenderingPipeline("retro", true, scene, [camera]);
-    pipeline.chromaticAberrationEnabled = true;
-    pipeline.chromaticAberration.aberrationAmount = 5;
-    pipeline.grainEnabled = true;
-    pipeline.grain.intensity = 20;
-    pipeline.sharpenEnabled = false;
-    pipeline.sharpen.edgeAmount = 0.3;
-}
-
-// Set up scene observables
-function setupSceneObservables() {
-    scene.onBeforeRenderObservable.add(updateGame);
-    scene.onKeyboardObservable.add(handleKeyboardInput);
-    canvas.addEventListener('touchstart', handleInput);
-}
-
-// Update game state
-function updateGame() {
-    if (isGameStarted) {
-        updateCharacterMovement();
-        updateEnergy();
-        updateScore();
-        updateEnergyMeter();
-        checkGameOver();
-        updateCameraPosition();  // Add this line
-    }
-    moveStars(scene);
-    updateBackgroundGradient(scene, character.position.z);
-}
-
-// Update character movement
-function updateCharacterMovement() {
-    if (isMoving && isMusicPlaying) {
-        character.position.z += characterWalkSpeed;
-    }
-}
-// Update energy
-function updateEnergy() {
-    if (isGameStarted) {
-        if (isMoving && isMusicPlaying) {
-            energy = Math.min(energy + 0.15, 100);
-        } else if (isMoving && !isMusicPlaying) {
-            energy = Math.max(energy - 1.2, 0);  // Slowed down the energy decrease
-        }
-        console.log("Current energy:", energy); // Add this line for debugging
-    }
-    updateEnergyMeter();
-}
-
-// Check for game over
-function checkGameOver() {
-    if (isGameStarted && energy <= 0) {
-        console.log("Energy depleted, calling gameOver");
-        gameOver();
-    }
-}
-
-// Handle keyboard input
-function handleKeyboardInput(kbInfo) {
-    if (kbInfo.type === BABYLON.KeyboardEventTypes.KEYDOWN && kbInfo.event.key === " ") handleInput();
-}
-  
-// Handle input (keyboard or touch)
- function handleInput() {
-    if (isGameStarted) {
-        isMoving = !isMoving;
-        forceAnimationChange();
-        
-        if (!isMusicPlaying && !isMoving) {
-            const reactionTime = (Date.now() - musicStopTime) / 1000;
-            scoreMultiplier = calculateMultiplier(reactionTime);
-            score += 100 * scoreMultiplier;
-            updateScore();
-            showFeedback(reactionTime);
-            triggerFeedbackParticles();
-            createMultiplierPopup(scoreMultiplier); // Add this line
-        }
-        
-        updateEnergy();
-        updateEnergyMeter();
-    }
-}
-
-
-// Create bridge
-function createBridge(scene) {
+// Create bridge (using instancing for better performance)
+async function createBridge(scene) {
     const bridgeLength = 2000;
     const bridgeWidth = 5;
-    const bridge = BABYLON.MeshBuilder.CreateBox("bridge", {width: bridgeWidth, height: 1, depth: bridgeLength}, scene);
+    const segmentLength = 10;
+    const segmentCount = bridgeLength / segmentLength;
+
+    const bridgeSegment = BABYLON.MeshBuilder.CreateBox("bridgeSegment", {width: bridgeWidth, height: 1, depth: segmentLength}, scene);
     
     const shaderMaterial = new BABYLON.ShaderMaterial("shader", scene, {
         vertex: "custom",
@@ -524,12 +311,12 @@ function createBridge(scene) {
         varying vec2 vUV;
         uniform float time;
         void main(void) {
-            float x = floor(vUV.x * 4000.0);
+            float x = floor(vUV.x * 40.0);
             float y = floor(vUV.y * 8.0);
             float chessBoardPattern = mod(x + y, 2.0);
             
-            vec3 color1 = vec3(0.545, 0.271, 0.075); // #FFB86C
-            vec3 color2 = vec3(0.824, 0.412, 0.118); // #8BE9FD
+            vec3 color1 = vec3(0.545, 0.271, 0.075);
+            vec3 color2 = vec3(0.824, 0.412, 0.118);
             
             float blinkIntensity = sin(time * 2.0 + vUV.x * 10.0) * 0.5 + 0.5;
             vec3 baseColor = mix(color1, color2, chessBoardPattern);
@@ -540,87 +327,81 @@ function createBridge(scene) {
     `;
 
     shaderMaterial.setFloat("time", 0);
-    
-    bridge.material = shaderMaterial;
+    bridgeSegment.material = shaderMaterial;
 
+    // Create instances
+    const instances = [];
+    for (let i = 0; i < segmentCount; i++) {
+        const instance = bridgeSegment.createInstance("bridgeSegment_" + i);
+        instance.position.z = i * segmentLength;
+        instances.push(instance);
+    }
+
+    // Update shader time in render loop
     let time = 0;
-    scene.registerBeforeRender(() => {
-        time += 0.016; // Assuming 60 FPS
+    scene.onBeforeRenderObservable.add(() => {
+        time += 0.016;
         shaderMaterial.setFloat("time", time);
     });
 
-    return bridge;
+    return bridgeSegment;
 }
 
-// Create stars
+// Create stars using instancing
 function createStars(scene) {
-    for (let i = 0; i < 1000; i++) {
-        const star = BABYLON.MeshBuilder.CreateSphere(`star${i}`, {diameter: 0.1}, scene);
-        star.position = new BABYLON.Vector3(Math.random() * 1000 - 500, Math.random() * 200 - 100, Math.random() * 1000 - 500);
-        const starMaterial = new BABYLON.StandardMaterial(`starMaterial${i}`, scene);
-        starMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
-        star.material = starMaterial;
+    const starCount = 1000;
+    const starMesh = BABYLON.MeshBuilder.CreateSphere("star", {diameter: 0.1}, scene);
+    const starMaterial = new BABYLON.StandardMaterial("starMaterial", scene);
+    starMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
+    starMesh.material = starMaterial;
+
+    const matrix = new BABYLON.Matrix();
+    const matrices = [];
+
+    for (let i = 0; i < starCount; i++) {
+        BABYLON.Matrix.TranslationToRef(
+            Math.random() * 1000 - 500,
+            Math.random() * 200 - 100,
+            Math.random() * 1000 - 500,
+            matrix
+        );
+        matrices.push(matrix.clone());
     }
-}
 
-// Add this new function to trigger the particle effect
-function triggerFeedbackParticles() {
-    if (particleSystem) {
-        particleSystem.emitRate = 2000;
-        particleSystem.start();
-        setTimeout(() => {
-            particleSystem.emitRate = 0;
-        }, 200);
-    }
+    starMesh.thinInstanceSetBuffer("matrix", matrices.map(m => m.asArray()).flat(), 16);
 }
-
-// Add this new function for the multiplier popup
-function createMultiplierPopup(multiplier) {
-    const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-    
-    const text = new BABYLON.GUI.TextBlock();
-    text.text = `x${multiplier.toFixed(1)}`;
-    text.color = "yellow";
-    text.fontSize = 48;
-    text.fontFamily = "AndaleMono";
-    
-    advancedTexture.addControl(text);
-    
-    text.top = "100px";
-    text.left = "0px";
-    
-    let alpha = 1;
-    let posY = 100;
-    
-    scene.registerBeforeRender(() => {
-        alpha -= 0.01;
-        posY -= 0.5;
-        
-        text.alpha = alpha;
-        text.top = posY + "px";
-        
-        if (alpha <= 0) {
-            advancedTexture.removeControl(text);
-        }
-    });
-}
-
 
 // Move stars
-function moveStars(scene) {
-    scene.meshes.filter(mesh => mesh.name.startsWith('star')).forEach(star => {
-        star.position.z -= 0.1;
-        if (star.position.z < -500) star.position.z = 500;
-    });
+function moveStars(deltaTime) {
+    const starMesh = scene.getMeshByName("star");
+    if (starMesh && starMesh.thinInstanceCount > 0) {
+        const matrices = starMesh.thinInstanceGetWorldMatrices();
+        for (let i = 0; i < matrices.length; i++) {
+            const matrix = matrices[i];
+            matrix.setTranslation(matrix.getTranslation().add(new BABYLON.Vector3(0, 0, -0.1 * deltaTime * 60)));
+            if (matrix.getTranslation().z < -500) {
+                matrix.setTranslation(new BABYLON.Vector3(
+                    Math.random() * 1000 - 500,
+                    Math.random() * 200 - 100,
+                    500
+                ));
+            }
+        }
+        starMesh.thinInstanceSetBuffer("matrix", matrices.map(m => m.asArray()).flat(), 16);
+    }
 }
 
 // Update background gradient
-function updateBackgroundGradient(scene, characterZ) {
-    const t = (characterZ % 1000) / 1000;
+// Update background gradient
+function updateBackgroundGradient() {
+    const t = (character.position.z % 1000) / 1000;
     const r = 1 - t * 0.5, g = 0.7 - t * 0.7, b = 0.7 - t * 0.7;
-    scene.clearColor = new BABYLON.Color4(r, g, b, 1);
+    scene.clearColor.r = r;
+    scene.clearColor.g = g;
+    scene.clearColor.b = b;
 }
 
+// Start game
 function startGame() {
     isGameStarted = true;
     startButton.style.display = 'none';
@@ -628,55 +409,18 @@ function startGame() {
     resetGameState();
     audio.load();
     audio.play().catch(e => console.error("Error playing audio:", e));
-    fallAnimation.stop();
-    idleAnimation.stop();
-forceAnimationChange();
+    setAnimationState(AnimationStates.WALK);
     scheduleNextPause();
-   setWalkSpeed(0.1);
-
-  
-    // Start camera movement
-    cameraChangeInterval = setInterval(updateCameraPosition, 5000); // Change every 5 seconds
+    lastTime = performance.now();
+    requestAnimationFrame(gameLoop);
 }
 
 // Setup UI
 function setupUI() {
-    setupScoreDisplay();
-    setupEnergyMeter();
-    setupFeedbackDisplay();
+    scoreDisplay = createUIElement('scoreDisplay');
+    energyMeter = createUIElement('energyMeter', 'energyMeterContainer');
+    feedbackDisplay = createUIElement('feedbackDisplay');
     if (highScoreDisplay) highScoreDisplay.style.display = 'none';
-}
-
-// Setup score display
-function setupScoreDisplay() {
-    if (document.getElementById('scoreDisplay')) document.getElementById('scoreDisplay').remove();
-    scoreDisplay = document.createElement('div');
-    scoreDisplay.id = 'scoreDisplay';
-    document.body.appendChild(scoreDisplay);
-    scoreDisplay.style.display = 'block';
-    updateScore();
-}
-
-// Setup energy meter
-function setupEnergyMeter() {
-    if (!energyMeter) {
-        const container = document.createElement('div');
-        container.id = 'energyMeterContainer';
-        energyMeter = document.createElement('div');
-        energyMeter.id = 'energyMeter';
-        container.appendChild(energyMeter);
-        document.body.appendChild(container);
-    }
-    updateEnergyMeter();
-}
-
-// Setup feedback display
-function setupFeedbackDisplay() {
-    if (!feedbackDisplay) {
-        feedbackDisplay = document.createElement('div');
-        feedbackDisplay.id = 'feedbackDisplay';
-        document.body.appendChild(feedbackDisplay);
-    }
 }
 
 // Reset game state
@@ -687,6 +431,7 @@ function resetGameState() {
     isMusicPlaying = true;
     scoreMultiplier = 1;
     musicStopCount = 0;
+    character.position.set(0, -4.5, 0);
 }
 
 // Pause music
@@ -714,13 +459,25 @@ function scheduleNextPause() {
 }
 
 // Update score
-function updateScore() {
+function updateScore(deltaTime) {
     if (isGameStarted && isMoving && isMusicPlaying) {
-        score += 0.1 * scoreMultiplier;
+        score += SCORE_INCREMENT * scoreMultiplier * deltaTime * 60;
     }
     if (scoreDisplay) {
         scoreDisplay.textContent = `${Math.floor(score)}`;
     }
+}
+
+// Update energy
+function updateEnergy(deltaTime) {
+    if (isGameStarted) {
+        if (isMoving && isMusicPlaying) {
+            energy = Math.min(energy + ENERGY_INCREASE_RATE * deltaTime * 60, 100);
+        } else if (isMoving && !isMusicPlaying) {
+            energy = Math.max(energy - ENERGY_DECREASE_RATE * deltaTime * 60, 0);
+        }
+    }
+    updateEnergyMeter();
 }
 
 // Update energy meter
@@ -731,8 +488,8 @@ function updateEnergyMeter() {
 // Calculate multiplier
 function calculateMultiplier(reactionTime) {
     if (reactionTime <= 0) return 33;
-    if (reactionTime >= 1.5) return 0;
-    return 330 * (1 - reactionTime);  // Linear decrease from 33 to 0 over 1 second
+    if (reactionTime >= MAX_REACTION_TIME) return 0;
+    return 33 * (1 - reactionTime / MAX_REACTION_TIME);
 }
 
 // Show feedback
@@ -750,52 +507,92 @@ function showFeedback(reactionTime) {
     feedbackDisplay.style.opacity = '1';
     feedbackDisplay.style.transform = 'translateY(0)';
     
-    setTimeout(() => {
-        feedbackDisplay.style.opacity = '0';
-        feedbackDisplay.style.transform = 'translateY(-50px)';
-    }, 5000);
-
-    setTimeout(() => {
-        feedbackDisplay.style.display = 'none';
-        feedbackDisplay.style.transform = 'translateY(0)';
-    }, 2000);
+    animateText(feedbackDisplay, -100, 1000);
 }
 
-// Update game state
-function updateGame() {
-    if (isGameStarted) {
-        updateCharacterMovement();
-        // Remove updateCharacterAnimation() from here
-        updateEnergy();
-        updateScore();
-        updateEnergyMeter();
-        checkGameOver();
-        updateCameraPosition();
+// Animate text upwards
+function animateText(element, distance, duration) {
+    let start = null;
+    const startPosition = 0;
+    
+    function step(timestamp) {
+        if (!start) start = timestamp;
+        const progress = timestamp - start;
+        const percentage = Math.min(progress / duration, 1);
+        
+        const currentPosition = startPosition + (distance * percentage);
+        element.style.transform = `translateY(${currentPosition}px)`;
+        element.style.opacity = 1 - percentage;
+        
+        if (progress < duration) {
+            requestAnimationFrame(step);
+        } else {
+            element.style.display = 'none';
+            element.style.transform = 'translateY(0)';
+        }
     }
-    moveStars(scene);
-    updateBackgroundGradient(scene, character.position.z);
-}
-  
-function resetCameraAndCheckHighScore() {
-    console.log("Resetting camera and checking high score");
-    camera.position = new BABYLON.Vector3(0, 15, -25);
-    camera.setTarget(character.position);
-    checkHighScore(Math.floor(score));
+    
+    requestAnimationFrame(step);
 }
 
-function checkHighScore(finalScore) {
+// Create multiplier popup
+function createMultiplierPopup(multiplier) {
+    const popupText = document.createElement('div');
+    popupText.className = 'multiplier-popup';
+    popupText.textContent = `x${multiplier.toFixed(1)}`;
+    document.body.appendChild(popupText);
+    
+    animateText(popupText, -100, 1000);
+    
+    setTimeout(() => {
+        popupText.remove();
+    }, 1000);
+}
+
+// Handle input (keyboard or touch)
+function handleInput() {
+    if (isGameStarted) {
+        isMoving = !isMoving;
+        setAnimationState(isMoving ? AnimationStates.WALK : AnimationStates.IDLE);
+        
+        if (!isMusicPlaying && !isMoving) {
+            const reactionTime = (Date.now() - musicStopTime) / 1000;
+            scoreMultiplier = calculateMultiplier(reactionTime);
+            score += 100 * scoreMultiplier;
+            showFeedback(reactionTime);
+            createMultiplierPopup(scoreMultiplier);
+        }
+        
+        updateEnergy(1/60);
+        updateEnergyMeter();
+    }
+}
+
+// Handle keyboard input
+function handleKeyboardInput(kbInfo) {
+    if (kbInfo.type === BABYLON.KeyboardEventTypes.KEYDOWN && kbInfo.event.key === " ") handleInput();
+}
+
+// Check for game over
+function checkGameOver() {
+    if (isGameStarted && energy <= 0) {
+        console.log("Energy depleted, calling gameOver");
+        gameOver();
+    }
+}
+
+// Handle high score
+function handleHighScore(finalScore) {
     getHighScores().then(highScores => {
         if (highScores.length < MAX_HIGH_SCORES || finalScore > highScores[highScores.length - 1].score) {
             const name = prompt("Congratulations! You got a high score! Enter your name:");
             if (name) {
                 submitHighScore(name, finalScore)
-                    .then(() => {
-                        console.log("High score submitted successfully");
-                        showHighScores();
-                    })
+                    .then(showHighScores)
                     .catch(error => {
                         console.error("Error submitting high score:", error);
                         alert("Failed to submit high score. Please try again.");
+                        showHighScores();
                     });
             } else {
                 showHighScores();
@@ -809,25 +606,19 @@ function checkHighScore(finalScore) {
     });
 }
 
+// Show high scores
 function showHighScores() {
-    // Show loading indicator
-    const loadingDiv = document.createElement('div');
-    loadingDiv.id = 'loadingHighScores';
+    const loadingDiv = createUIElement('loadingHighScores');
     loadingDiv.textContent = 'Loading high scores...';
-    document.body.appendChild(loadingDiv);
 
     getHighScores()
         .then(highScores => {
-            // Remove loading indicator
-            document.getElementById('loadingHighScores').remove();
-
-            // Clear previous high score display
+            loadingDiv.remove();
             if (document.getElementById('highScoreDisplay')) {
                 document.getElementById('highScoreDisplay').remove();
             }
 
-            const highScoreDisplay = document.createElement('div');
-            highScoreDisplay.id = 'highScoreDisplay';
+            const highScoreDisplay = createUIElement('highScoreDisplay');
             highScoreDisplay.innerHTML = '<h2>High Scores</h2>';
             
             if (highScores.length === 0) {
@@ -842,33 +633,77 @@ function showHighScores() {
                 highScoreDisplay.appendChild(list);
             }
 
-            document.body.appendChild(highScoreDisplay);
             startButton.textContent = 'Start Game';
             startButton.style.display = 'block';
         })
         .catch(error => {
             console.error("Error fetching high scores:", error);
-            const errorDiv = document.createElement('div');
-            errorDiv.id = 'highScoreError';
+            loadingDiv.remove();
+            const errorDiv = createUIElement('highScoreError');
             errorDiv.textContent = 'Unable to load high scores. Please try again later.';
-            document.body.appendChild(errorDiv);
         });
 }
 
+// Main game loop
+function gameLoop(currentTime) {
+    const deltaTime = (currentTime - lastTime) / 1000;
+    lastTime = currentTime;
+
+    if (isGameStarted) {
+        updateGame(deltaTime);
+    }
+
+    scene.render();
+
+    requestAnimationFrame(gameLoop);
+}
+
+// Update game state
+function updateGame(deltaTime) {
+    updateCharacterMovement(deltaTime);
+    updateEnergy(deltaTime);
+    updateScore(deltaTime);
+    checkGameOver();
+    updateCameraPosition(deltaTime);
+    moveStars(deltaTime);
+    updateBackgroundGradient();
+}
+
+// Update character movement
+function updateCharacterMovement(deltaTime) {
+    if (isMoving && isMusicPlaying) {
+        character.position.z += characterWalkSpeed * deltaTime * 60;
+    }
+}
+
+// Main function
 async function main() {
     try {
         initializeEngine();
         const scene = await createScene();
         engine.runRenderLoop(() => scene.render());
         startButton.addEventListener('click', startGame);
+        window.addEventListener("resize", () => {
+            engine.resize();
+            adjustCameraForOrientation();
+        });
+        scene.onKeyboardObservable.add(handleKeyboardInput);
+        canvas.addEventListener('touchstart', handleInput);
+        
+        // Make canvas fullscreen
+        canvas.style.width = '100vw';
+        canvas.style.height = '100vh';
+        canvas.style.display = 'block';
+        document.body.style.margin = '0';
+        document.body.style.padding = '0';
+        document.body.style.overflow = 'hidden';
     } catch (error) {
-        console.error("Error starting game:", error.message, error.stack);
+        console.error("Error starting game:", error);
         alert("An error occurred while starting the game. Please check the console for more details.");
     }
 }
 
-// Window resize event
-window.addEventListener("resize", () => engine.resize());
-
-// Call main function to start the game
+// Start the game
 main().catch((error) => console.error("Error starting game:", error));
+
+document.head.innerHTML += '<link rel="stylesheet" href="styles.css">';
