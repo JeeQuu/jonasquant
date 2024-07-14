@@ -1,28 +1,43 @@
 <!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - back hem</title>
+  <link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shy Boy Game</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babylonjs/5.0.0/babylon.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 </head>
 <body>
     <canvas id="renderCanvas"></canvas>
     <audio id="gameAudio" loop>
-        <source src="https://res.cloudinary.com/dakoxedxt/video/upload/v1719689901/shyboy_fmix5_qwsnxz.mp3" type="audio/mpeg">
+        <source src="https://dl.dropboxusercontent.com/scl/fi/56yizduvyeet70qbto4yy/shyboy_fmix5.mp3?rlkey=459env9wz0ym4ru49x2hcd0j5&dl=1" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
     <button id="startButton">Start Game</button>
-    <div id="scoreDisplay"></div>
+    <div id="scoreDisplay">Score: 0</div>
     <div id="energyMeterContainer">
         <div id="energyMeter"></div>
     </div>
     <div id="feedbackDisplay"></div>
     <div id="highScoreDisplay"></div>
-    <div id="fpsDisplay"></div>
-    <script src="script.js"></script>
+    <div id="fpsDisplay">FPS: 60</div>
+
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+</body>
+</html>
+<!-- partial -->
+  <script  src="./script.js"></script>
+
 </body>
 </html>
