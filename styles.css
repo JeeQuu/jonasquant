@@ -1,108 +1,147 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-body, html {
+body {
+    position: relative;
+    min-height: 100vh;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    font-family: 'Press Start 2P', cursive;
+    background: black;
 }
 
-#renderCanvas {
-    width: 100vw;
-    height: 100vh;
-    display: block;
-    touch-action: none;
+.nav {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
 }
 
-#startButton {
-    position: absolute;
-    top: 10%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 10px 20px;
-    font-size: 20px;
-    cursor: pointer;
-    background-color: #4CAF50;
+.nav ul {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+}
+
+.nav a {
     color: white;
-    border: none;
-    border-radius: 5px;
-    font-family: 'Press Start 2P', cursive;
+    text-decoration: none;
+    font-family: 'Space Mono', monospace;
+    transition: color 0.3s;
 }
 
-#scoreDisplay {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 24px;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+.nav a:hover {
+    color: #60a5fa;
 }
 
-#energyMeterContainer {
-    position: absolute;
-    bottom: 10px;
-    left: 700px;
-    width: 200px;
-    height: 20px;
-    background-color: #333;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-#energyMeter {
-    height: 100%;
-    background-color: #4CAF50;
+#game {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    transition: width 0.3s ease-out;
+    height: 100%;
+    z-index: 2;
+    background: transparent !important;
 }
 
-#feedbackDisplay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 36px;
-    color: yellow;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+/* Add transition class for smoother changes */
+.transitioning {
+    animation: none !important;
+    transition: all 1s ease-in-out !important;
+}
+
+/* Ensure content appears above video */
+.content {
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes slideFromLeft {
+  0%, 100% {
+    transform: translateX(-100%) scale(1.5);
     opacity: 0;
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  }
+  10%, 45% {
+    transform: translateX(-75%) scale(1.5);
+    opacity: 0.4;
+  }
+  55% {
+    transform: translateX(-100%) scale(1.5);
+    opacity: 0;
+  }
 }
 
-#highScoreDisplay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
+@keyframes slideFromRight {
+  0%, 100% {
+    transform: translateX(100%) scale(1.5);
+    opacity: 0;
+  }
+  10%, 45% {
+    transform: translateX(75%) scale(1.5);
+    opacity: 0.4;
+  }
+  55% {
+    transform: translateX(100%) scale(1.5);
+    opacity: 0;
+  }
 }
 
-#highScoreDisplay h2 {
-    margin-top: 0;
+.mirrored-container {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
 }
 
-#highScoreDisplay ol {
-    padding-left: 20px;
-    text-align: left;
+.image-left {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 70%;
+  height: auto;
+  transform: scale(1.5);
+  transform-origin: left bottom;
+  animation: slideFromLeft 20s ease-in-out 20s infinite;
+  opacity: 0;
+  animation-delay: 20s;
 }
 
-#fpsDisplay {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 16px;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+.image-right {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 70%;
+  height: auto;
+  transform: scale(1.5);
+  transform-origin: right bottom;
+  animation: slideFromRight 20s ease-in-out 20s infinite;
+  opacity: 0;
+  animation-delay: 20s;
 }
 
-.multiplier-popup {
-    position: absolute;
-    font-size: 24px;
-    color: #FFD700;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    opacity: 1;
-    transition: opacity 1s ease-out, transform 1s ease-out;
+/* Fixed synth animation */
+.synth {
+  position: fixed;
+  width: 200px;
+  opacity: 0;
+  pointer-events: none;
+  animation: floatSynth 30s linear infinite;
+  z-index: 1;
+}
+
+@keyframes floatSynth {
+  0% {
+    transform: translateX(-100px) translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    transform: translateX(20vw) translateY(80vh) rotate(120deg);
+    opacity: 0.4;
+  }
+  90% {
+    transform: translateX(80vw) translateY(20vh) rotate(240deg);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateX(100vw) translateY(0) rotate(360deg);
+    opacity: 0;
+  }
 }

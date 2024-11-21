@@ -1,43 +1,29 @@
 <!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="UTF-8">
-  <title>CodePen - back hem</title>
-  <link rel="stylesheet" href="./style.css">
-
-</head>
-<body>
-<!-- partial:index.partial.html -->
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shy Boy Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Space Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
+    <!-- Matter.js first -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <!-- Then Phaser -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <canvas id="renderCanvas"></canvas>
-    <audio id="gameAudio" loop>
-        <source src="https://dl.dropboxusercontent.com/scl/fi/56yizduvyeet70qbto4yy/shyboy_fmix5.mp3?rlkey=459env9wz0ym4ru49x2hcd0j5&dl=1" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-    <button id="startButton">Start Game</button>
-    <div id="scoreDisplay">Score: 0</div>
-    <div id="energyMeterContainer">
-        <div id="energyMeter"></div>
+    <nav class="nav">
+    </nav>
+    <div class="content">
+        <div id="game"></div>
+        <div class="mirrored-container">
+            <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1732211493/jeequu_a_city_being_built_on_a_woman_face_--personalize_6t184_3e9923c2-551f-46cf-a79b-125e05940794_2_ph34ce.png" class="image-left" alt="apartmentface">
+            <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1732211493/jeequu_a_city_being_built_on_a_woman_face_--personalize_6t184_3e9923c2-551f-46cf-a79b-125e05940794_2_ph34ce.png" class="image-right" alt="apartmentface">
+        </div>
+        <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1732214257/synth2_as7tmz.png" class="synth" alt="synth">
     </div>
-    <div id="feedbackDisplay"></div>
-    <div id="highScoreDisplay"></div>
-    <div id="fpsDisplay">FPS: 60</div>
-
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-</body>
-</html>
-<!-- partial -->
-  <script  src="./script.js"></script>
-
+    <script src="zzfx.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
