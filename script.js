@@ -68,6 +68,44 @@ class SpaceScene extends Phaser.Scene {
     }
 
     create() {
+        // Add this at the start of create()
+        try {
+            // Initialize audio
+            this.music = this.sound.add('beat', {
+                loop: true,
+                volume: 0.5
+            });
+            
+            // Set up audio context and analyzer
+            const audioContext = this.sound.context;
+            const source = this.sound.sounds[0].source;
+            
+            this.analyser = audioContext.createAnalyser();
+            this.analyser.fftSize = 2048;
+            this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+            
+            source.connect(this.analyser);
+            this.analyser.connect(audioContext.destination);
+
+            // Add unlock handler
+            const unlockAudio = () => {
+                if (this.sound.locked) {
+                    this.sound.unlock();
+                    this.music.play();
+                }
+                document.body.removeEventListener('click', unlockAudio);
+                document.body.removeEventListener('touchstart', unlockAudio);
+            };
+
+            document.body.addEventListener('click', unlockAudio, { once: true });
+            document.body.addEventListener('touchstart', unlockAudio, { once: true });
+
+            this.soundsReady = true;
+        } catch (error) {
+            console.error('Audio initialization failed:', error);
+            this.soundsReady = false;
+        }
+
         this.time.timeScale = 1;
         
         // Set up the Matter world bounds to match the window size
