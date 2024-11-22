@@ -73,20 +73,19 @@ class SpaceScene extends Phaser.Scene {
             // Initialize audio
             this.music = this.sound.add('beat', {
                 loop: true,
-                volume: 0.5
+                volume: 0.3
             });
             
-            // Set up audio context and analyzer
-            const audioContext = this.sound.context;
-            const source = this.sound.sounds[0].source;
-            
-            this.analyser = audioContext.createAnalyser();
-            this.analyser.fftSize = 2048;
+            // Create analyzer node
+            this.analyser = this.sound.context.createAnalyser();
+            this.analyser.fftSize = 1024; // Reduced for better performance
             this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
             
+            // Connect music to analyzer
+            const source = this.sound.sounds[0].source;
             source.connect(this.analyser);
-            this.analyser.connect(audioContext.destination);
-
+            this.analyser.connect(this.sound.context.destination);
+            
             // Add unlock handler
             const unlockAudio = () => {
                 if (this.sound.locked) {
