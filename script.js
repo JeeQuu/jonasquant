@@ -592,7 +592,7 @@ class SpaceScene extends Phaser.Scene {
             await new Promise(resolve => setTimeout(resolve, 100));
             
             // Initialize sounds after audio context is ready
-            this.sounds = window.gameSounds;
+            //this.sounds = window.gameSounds;
             
             if (this.music && !this.music.isPlaying) {
                 this.music = this.sound.add('beat', { 
