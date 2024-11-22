@@ -599,10 +599,6 @@ class SpaceScene extends Phaser.Scene {
         const startAudio = async () => {
             console.log('Start audio called');
             
-            if (!window.zzfxX) {
-                await window.initAudio();
-            }
-            
             await new Promise(resolve => setTimeout(resolve, 100));
             
             // Initialize sounds after audio context is ready
