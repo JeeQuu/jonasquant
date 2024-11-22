@@ -1,3 +1,6 @@
+// Add at the very top of script.js
+let game;
+
 class SpaceScene extends Phaser.Scene {
     constructor() {
         super({ key: 'SpaceScene' });
@@ -2211,28 +2214,52 @@ const config = {
 
 // Initialize game only once
 window.addEventListener('load', () => {
-    game = new Phaser.Game(config);
+    try {
+        if (typeof Phaser === 'undefined') {
+            console.error('Phaser is not loaded');
+            return;
+        }
+        
+        game = new Phaser.Game(config);
+        
+        // Remove any existing event listeners to prevent duplicates
+        document.body.removeEventListener('click', window.initAudio);
+        document.body.removeEventListener('touchstart', window.initAudio);
+        
+        // Add error handler
+        game.events.on('error', (error) => {
+            console.error('Phaser error:', error);
+        });
+    } catch (error) {
+        console.error('Game initialization failed:', error);
+    }
 });
 
 // Handle resize separately
 window.addEventListener('resize', () => {
-    if (game) {
-        game.scale.resize(window.innerWidth, window.innerHeight);
-        if (game.scene.scenes[0].mountains) {
-            game.scene.scenes[0].mountains = [];
-            game.scene.scenes[0].createMountains();
-        }
-        
-        if (this.effects) {
-            // Redraw scanlines
-            this.effects.scanlines.clear();
-            for(let y = 0; y < window.innerHeight; y += 4) {
-                this.effects.scanlines.lineBetween(0, y, window.innerWidth, y);
+    try {
+        if (game && game.scene && game.scene.scenes[0]) {
+            game.scale.resize(window.innerWidth, window.innerHeight);
+            
+            const currentScene = game.scene.scenes[0];
+            if (currentScene.mountains) {
+                currentScene.mountains = [];
+                currentScene.createMountains();
             }
             
-            // Update noise layers
-            this.effects.noise.setSize(window.innerWidth, window.innerHeight);
-            this.effects.fineGrain.setSize(window.innerWidth, window.innerHeight);
+            if (currentScene.effects) {
+                // Redraw scanlines
+                currentScene.effects.scanlines.clear();
+                for(let y = 0; y < window.innerHeight; y += 4) {
+                    currentScene.effects.scanlines.lineBetween(0, y, window.innerWidth, y);
+                }
+                
+                // Update noise layers
+                currentScene.effects.noise.setSize(window.innerWidth, window.innerHeight);
+                currentScene.effects.fineGrain.setSize(window.innerWidth, window.innerHeight);
+            }
         }
+    } catch (error) {
+        console.error('Resize handler error:', error);
     }
 });
