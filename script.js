@@ -71,30 +71,41 @@ class SpaceScene extends Phaser.Scene {
     }
 
     create() {
-        // Add this at the start of create()
         try {
             // Initialize audio
             this.music = this.sound.add('beat', {
                 loop: true,
                 volume: 0.3
             });
-            
-            // Create analyzer node
-            this.analyser = this.sound.context.createAnalyser();
-            this.analyser.fftSize = 1024; // Reduced for better performance
-            this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
-            
-            // Connect music to analyzer
-            const source = this.sound.sounds[0].source;
-            source.connect(this.analyser);
-            this.analyser.connect(this.sound.context.destination);
-            
+
+            // Wait for the audio context to be ready
+            const setupAudioAnalyzer = () => {
+                try {
+                    if (this.sound.context) {
+                        // Create analyzer node
+                        this.analyser = this.sound.context.createAnalyser();
+                        this.analyser.fftSize = 1024;
+                        this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+
+                        // Connect to the WebAudio nodes
+                        if (this.music.source) {
+                            this.music.source.connect(this.analyser);
+                            this.analyser.connect(this.sound.context.destination);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Analyzer setup failed:', error);
+                }
+            };
+
             // Add unlock handler
             const unlockAudio = () => {
                 if (this.sound.locked) {
                     this.sound.unlock();
-                    this.music.play();
                 }
+                this.music.play();
+                setupAudioAnalyzer();
+                
                 document.body.removeEventListener('click', unlockAudio);
                 document.body.removeEventListener('touchstart', unlockAudio);
             };
@@ -2221,10 +2232,6 @@ window.addEventListener('load', () => {
         }
         
         game = new Phaser.Game(config);
-        
-        // Remove any existing event listeners to prevent duplicates
-        document.body.removeEventListener('click', window.initAudio);
-        document.body.removeEventListener('touchstart', window.initAudio);
         
         // Add error handler
         game.events.on('error', (error) => {
