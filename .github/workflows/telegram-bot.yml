@@ -1,0 +1,18 @@
+name: Telegram Bot Actions
+
+on:
+  repository_dispatch:
+    types: [telegram-message]
+
+jobs:
+  send-telegram-message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram Message
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: |
+          curl -X POST \
+          -H "Content-Type: application/json" \
+          -d "{\"chat_id\": \"${{ github.event.client_payload.chat_id }}\", \"text\": \"${{ github.event.client_payload.text }}\"}" \
+          "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage"
