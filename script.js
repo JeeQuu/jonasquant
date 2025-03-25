@@ -52,6 +52,10 @@ class SpaceScene extends Phaser.Scene {
             waveSpeed: 0.001,    // Reduced from 0.002 for slower waves
             waveAmplitude: 0.3
         };
+        this.menuButtons = [];
+        this.menuTrigger = null;
+        this.menuActive = false;
+        this.menuTweens = []; // Track active tweens
     }
 
     preload() {
@@ -73,6 +77,19 @@ class SpaceScene extends Phaser.Scene {
         this.load.audio('thrust', 'https://res.cloudinary.com/dakoxedxt/video/upload/v1728906753/SAWLOOPOUTCAST_SFX_tgofdg.wav');
         this.load.audio('select', 'https://res.cloudinary.com/dakoxedxt/video/upload/v1730833368/red8_s8hjtk.wav');
         this.load.audio('terminate', 'https://res.cloudinary.com/dakoxedxt/video/upload/v1728906734/FIENDE_PYRAMIDGUBBE_2OUTCAST_SFX_n451vw.wav');
+        
+        // Load menu assets
+        this.load.image('menuTrigger', 'path/to/circle-trigger.png');
+        this.load.image('btnVisuals', 'https://res.cloudinary.com/dakoxedxt/image/upload/v1739035320/VISUAL_2.6.1_wu52c3.png');
+        this.load.image('btnMe', 'https://res.cloudinary.com/dakoxedxt/image/upload/v1739035320/ME_BUTTON_2.3.1_m374hy.png');
+        this.load.image('btnContact', 'https://res.cloudinary.com/dakoxedxt/image/upload/v1739035320/CONTACT_1.4.1_wdxrwa.png');
+        this.load.image('btnCoaching', 'https://res.cloudinary.com/dakoxedxt/image/upload/v1739035320/COACHBUTTON_2.1.1_lz4aje.png');
+        this.load.image('btnMusic', 'https://res.cloudinary.com/dakoxedxt/image/upload/v1739035320/MIUSIC_2.5.1_zayu1k.png');
+
+        // Add load error handling
+        this.load.on('loaderror', (fileObj) => {
+            console.error('Error loading:', fileObj.src);
+        });
     }
 
     create() {
@@ -870,6 +887,64 @@ class SpaceScene extends Phaser.Scene {
                 this.ship.setAngularVelocity(rotationSpeed);
             }
         });
+
+        // Add menu creation with debug logging
+        console.log('Creating menu...');
+        this.createMenu();
+    }
+
+    createMenu() {
+        console.log('Creating menu...');
+        
+        // Create trigger button
+        const graphics = this.add.graphics();
+        graphics.lineStyle(2, 0xffffff);
+        graphics.strokeCircle(0, 0, 25);
+        
+        this.menuTrigger = this.add.container(60, window.innerHeight/2);
+        this.menuTrigger.add(graphics);
+        this.menuTrigger.setInteractive(new Phaser.Geom.Circle(0, 0, 25), Phaser.Geom.Circle.Contains);
+        this.menuTrigger.setDepth(1000);
+
+        // Create menu buttons
+        const buttonKeys = ['btnVisuals', 'btnMe', 'btnContact', 'btnCoaching', 'btnMusic'];
+        
+        buttonKeys.forEach((key, index) => {
+            const btn = this.add.image(60, 150 + (index * 100), key);
+            btn.setScale(0.08); // Larger size
+            btn.setInteractive();
+            btn.setDepth(1000);
+            btn.setTint(0xCCCCCC); // Light gray tint to desaturate colors
+            this.menuButtons.push(btn);
+        });
+
+        // Simple click handler
+        this.menuTrigger.on('pointerdown', () => {
+            console.log('Trigger clicked');
+            this.showMenu();
+        });
+    }
+
+    showMenu() {
+        console.log('Showing menu');
+        this.menuActive = true;
+        this.menuTrigger.setVisible(false);
+        
+        this.menuButtons.forEach((btn, index) => {
+            btn.setVisible(true);
+            console.log('Button shown:', index);
+        });
+    }
+
+    hideMenu() {
+        console.log('Hiding menu');
+        this.menuActive = false;
+        
+        this.menuButtons.forEach((btn, index) => {
+            btn.setVisible(false);
+        });
+
+        this.menuTrigger.setVisible(true);
     }
 
     update() {
