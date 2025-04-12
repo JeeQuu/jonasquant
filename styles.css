@@ -582,3 +582,162 @@ body {
       box-shadow: 0 0 30px #ff00ff;
   }
   
+  /* Dance Game Button with random position and blinking */
+  .dance-game-btn {
+    position: fixed;
+    width: 150px;
+    height: auto;
+    z-index: 1000;
+    cursor: pointer;
+    filter: drop-shadow(0 0 10px #ff00ff);
+    transition: all 0.2s ease;
+    transform-origin: center;
+    animation: blink-attention 1.5s infinite alternate, random-position 8s infinite;
+  }
+  
+  .dance-game-btn img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 3px solid #ff00ff;
+  }
+  
+  .play-me-text {
+    position: absolute;
+    bottom: -30px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #00ff00;
+    font-family: 'Space Mono', monospace;
+    font-weight: bold;
+    font-size: 18px;
+    text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+    animation: neon-pulse 1s infinite alternate;
+  }
+  
+  @keyframes blink-attention {
+    0%, 80% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    90% {
+      opacity: 0.5;
+      transform: scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+  }
+  
+  @keyframes random-position {
+    0% {
+      top: 20%;
+      left: 20%;
+    }
+    25% {
+      top: 30%;
+      left: 70%;
+    }
+    50% {
+      top: 70%;
+      left: 30%;
+    }
+    75% {
+      top: 60%;
+      left: 60%;
+    }
+    100% {
+      top: 20%;
+      left: 20%;
+    }
+  }
+  
+  @keyframes neon-pulse {
+    from {
+      text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+    }
+    to {
+      text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+    }
+  }
+  
+  /* Flying After9 Logo with 3D effect */
+  .flying-logo {
+    position: fixed;
+    width: 200px;
+    height: auto;
+    z-index: 900;
+    pointer-events: none;
+    animation: fly-around 15s infinite linear, rotate3d 8s infinite ease-in-out;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+  }
+  
+  .flying-logo img {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 15px rgba(255, 0, 255, 0.8));
+    animation: logo-blink 2s infinite alternate;
+  }
+  
+  @keyframes fly-around {
+    0% {
+      top: 10%;
+      left: 10%;
+    }
+    25% {
+      top: 15%;
+      left: 80%;
+    }
+    50% {
+      top: 75%;
+      left: 75%;
+    }
+    75% {
+      top: 65%;
+      left: 15%;
+    }
+    100% {
+      top: 10%;
+      left: 10%;
+    }
+  }
+  
+  @keyframes rotate3d {
+    0% {
+      transform: rotateX(0deg) rotateY(0deg);
+    }
+    25% {
+      transform: rotateX(10deg) rotateY(20deg);
+    }
+    50% {
+      transform: rotateX(0deg) rotateY(0deg);
+    }
+    75% {
+      transform: rotateX(-10deg) rotateY(-20deg);
+    }
+    100% {
+      transform: rotateX(0deg) rotateY(0deg);
+    }
+  }
+  
+  @keyframes logo-blink {
+    0%, 80% {
+      opacity: 1;
+    }
+    85% {
+      opacity: 0.7;
+    }
+    90% {
+      opacity: 1;
+    }
+    95% {
+      opacity: 0.7;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  

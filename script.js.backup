@@ -1,79 +1,6 @@
 // Add at the very top of script.js
 let game;
 
-// Initialize EmailJS (add this near the top of your script)
-(function() {
-    emailjs.init("cQc0Zbd-BVu34QIhr");
-})();
-
-// Dance Game and Flying Logo functionality
-document.addEventListener('DOMContentLoaded', function() {
-    // Dance Game Button functionality
-    const danceGameBtn = document.getElementById('danceGameButton');
-    if (danceGameBtn) {
-        // Add click event to open the game in a new tab
-        danceGameBtn.addEventListener('click', function() {
-            window.open('https://after-tau.vercel.app/', '_blank');
-        });
-        
-        // Add hover effect
-        danceGameBtn.addEventListener('mouseenter', function() {
-            this.style.transform = 'scale(1.1) rotate(5deg)';
-            this.style.filter = 'drop-shadow(0 0 15px #ff00ff) brightness(1.2)';
-        });
-        
-        danceGameBtn.addEventListener('mouseleave', function() {
-            this.style.transform = '';
-            this.style.filter = '';
-        });
-        
-        // Add random movement beyond CSS animations
-        setInterval(() => {
-            // Random scale for extra attention
-            const randomScale = 0.95 + Math.random() * 0.2; // Between 0.95 and 1.15
-            danceGameBtn.style.transform = `scale(${randomScale})`;
-            
-            // Random rotation for extra flair
-            const randomRotation = -10 + Math.random() * 20; // Between -10 and 10 degrees
-            danceGameBtn.style.transform += ` rotate(${randomRotation}deg)`;
-            
-            // Random brightness pulse
-            const randomBrightness = 0.9 + Math.random() * 0.3; // Between 0.9 and 1.2
-            danceGameBtn.style.filter = `drop-shadow(0 0 10px #ff00ff) brightness(${randomBrightness})`;
-        }, 1000);
-    }
-    
-    // Flying Logo enhanced effects
-    const flyingLogo = document.getElementById('after9Logo');
-    if (flyingLogo) {
-        // Add 3D perspective effects beyond CSS
-        const updateLogoEffects = () => {
-            // Random 3D transform for more dynamic movement
-            const rotateX = -15 + Math.random() * 30; // Between -15 and 15 degrees
-            const rotateY = -20 + Math.random() * 40; // Between -20 and 20 degrees
-            const rotateZ = -5 + Math.random() * 10;  // Between -5 and 5 degrees
-            
-            // Random scale for breathing effect
-            const scale = 0.95 + Math.random() * 0.15; // Between 0.95 and 1.1
-            
-            // Apply transforms
-            flyingLogo.style.transform = `
-                rotateX(${rotateX}deg) 
-                rotateY(${rotateY}deg) 
-                rotateZ(${rotateZ}deg) 
-                scale(${scale})
-            `;
-            
-            // Random glow intensity
-            const glowIntensity = 15 + Math.random() * 10; // Between 15 and 25px
-            flyingLogo.querySelector('img').style.filter = `drop-shadow(0 0 ${glowIntensity}px rgba(255, 0, 255, 0.8))`;
-        };
-        
-        // Update effects at regular intervals
-        setInterval(updateLogoEffects, 500);
-    }
-});
-
 class SpaceScene extends Phaser.Scene {
     constructor() {
         super({ key: 'SpaceScene' });
@@ -120,10 +47,6 @@ class SpaceScene extends Phaser.Scene {
             waveSpeed: 0.001,    // Reduced from 0.002 for slower waves
             waveAmplitude: 0.3
         };
-        this.menuButtons = [];
-        this.menuTrigger = null;
-        this.menuActive = false;
-        this.menuTweens = []; // Track active tweens
     }
 
     preload() {
@@ -145,19 +68,6 @@ class SpaceScene extends Phaser.Scene {
         this.load.audio('thrust', 'https://res.cloudinary.com/dakoxedxt/video/upload/v1728906753/SAWLOOPOUTCAST_SFX_tgofdg.wav');
         this.load.audio('select', 'https://res.cloudinary.com/dakoxedxt/video/upload/v1730833368/red8_s8hjtk.wav');
         this.load.audio('terminate', 'https://res.cloudinary.com/dakoxedxt/video/upload/v1728906734/FIENDE_PYRAMIDGUBBE_2OUTCAST_SFX_n451vw.wav');
-        
-        // Load menu assets
-        this.load.image('menuTrigger', 'path/to/circle-trigger.png');
-        this.load.image('btnVisuals', 'https://res.cloudinary.com/dakoxedxt/image/upload/v1739035320/VISUAL_2.6.1_wu52c3.png');
-        this.load.image('btnMe', 'https://res.cloudinary.com/dakoxedxt/image/upload/v1739035320/ME_BUTTON_2.3.1_m374hy.png');
-        this.load.image('btnContact', 'https://res.cloudinary.com/dakoxedxt/image/upload/v1739035320/CONTACT_1.4.1_wdxrwa.png');
-        this.load.image('btnCoaching', 'https://res.cloudinary.com/dakoxedxt/image/upload/v1739035320/COACHBUTTON_2.1.1_lz4aje.png');
-        this.load.image('btnMusic', 'https://res.cloudinary.com/dakoxedxt/image/upload/v1739035320/MIUSIC_2.5.1_zayu1k.png');
-
-        // Add load error handling
-        this.load.on('loaderror', (fileObj) => {
-            console.error('Error loading:', fileObj.src);
-        });
     }
 
     create() {
@@ -216,9 +126,7 @@ class SpaceScene extends Phaser.Scene {
         
         // Create controls
         this.cursors = this.input.keyboard.createCursorKeys();
-        
-        // Add this to prevent spacebar from being captured by Phaser
-        this.input.keyboard.removeCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         // Set up the camera to follow the ship
         this.cameras.main.setZoom(1);
@@ -323,7 +231,7 @@ class SpaceScene extends Phaser.Scene {
                     fontSize: `${fontSize}px`,
                     color: '#ffffff',
                     resolution: 2,
-                    fontWeight: '400'  // Changed from '700' to '400' for a lighter weight
+                    fontWeight: '700'
                 }
             )
             .setOrigin(0.5)
@@ -955,64 +863,6 @@ class SpaceScene extends Phaser.Scene {
                 this.ship.setAngularVelocity(rotationSpeed);
             }
         });
-
-        // Add menu creation with debug logging
-        console.log('Creating menu...');
-        this.createMenu();
-    }
-
-    createMenu() {
-        console.log('Creating menu...');
-        
-        // Create trigger button
-        const graphics = this.add.graphics();
-        graphics.lineStyle(2, 0xffffff);
-        graphics.strokeCircle(0, 0, 25);
-        
-        this.menuTrigger = this.add.container(60, window.innerHeight/2);
-        this.menuTrigger.add(graphics);
-        this.menuTrigger.setInteractive(new Phaser.Geom.Circle(0, 0, 25), Phaser.Geom.Circle.Contains);
-        this.menuTrigger.setDepth(1000);
-
-        // Create menu buttons
-        const buttonKeys = ['btnVisuals', 'btnMe', 'btnContact', 'btnCoaching', 'btnMusic'];
-        
-        buttonKeys.forEach((key, index) => {
-            const btn = this.add.image(60, 150 + (index * 100), key);
-            btn.setScale(0.08); // Larger size
-            btn.setInteractive();
-            btn.setDepth(1000);
-            btn.setTint(0xCCCCCC); // Light gray tint to desaturate colors
-            this.menuButtons.push(btn);
-        });
-
-        // Simple click handler
-        this.menuTrigger.on('pointerdown', () => {
-            console.log('Trigger clicked');
-            this.showMenu();
-        });
-    }
-
-    showMenu() {
-        console.log('Showing menu');
-        this.menuActive = true;
-        this.menuTrigger.setVisible(false);
-        
-        this.menuButtons.forEach((btn, index) => {
-            btn.setVisible(true);
-            console.log('Button shown:', index);
-        });
-    }
-
-    hideMenu() {
-        console.log('Hiding menu');
-        this.menuActive = false;
-        
-        this.menuButtons.forEach((btn, index) => {
-            btn.setVisible(false);
-        });
-
-        this.menuTrigger.setVisible(true);
     }
 
     update() {
@@ -2415,83 +2265,4 @@ window.addEventListener('resize', () => {
     } catch (error) {
         console.error('Resize handler error:', error);
     }
-});
-
-// Add this at the bottom of your script.js file
-document.addEventListener('DOMContentLoaded', () => {
-    const infoButton = document.getElementById('infoButton');
-    const infoOverlay = document.getElementById('infoOverlay');
-    const closeButton = document.querySelector('.close-button');
-
-    infoButton.addEventListener('click', () => {
-        infoOverlay.classList.add('active');
-    });
-
-    closeButton.addEventListener('click', () => {
-        infoOverlay.classList.remove('active');
-    });
-
-    // Close overlay when clicking outside the content
-    infoOverlay.addEventListener('click', (e) => {
-        if (e.target === infoOverlay) {
-            infoOverlay.classList.remove('active');
-        }
-    });
-
-    // Close overlay with escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && infoOverlay.classList.contains('active')) {
-            infoOverlay.classList.remove('active');
-        }
-    });
-
-    // Handle form submission
-    const contactForm = document.getElementById('contactForm');
-    const submitButton = contactForm.querySelector('.submit-button');
-    const statusMessage = document.createElement('div');
-    statusMessage.className = 'status-message';
-    contactForm.appendChild(statusMessage);
-
-    contactForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        // Show loading state
-        submitButton.textContent = 'Sending...';
-        submitButton.disabled = true;
-        statusMessage.textContent = '';
-
-        const templateParams = {
-            from_name: contactForm.querySelector('#name').value,
-            reply_to: contactForm.querySelector('#email').value,
-            message: contactForm.querySelector('#message').value
-        };
-
-        try {
-            await emailjs.send(
-                'service_596qdpg',
-                'template_u2435fr',
-                templateParams
-            );
-
-            // Success
-            statusMessage.textContent = 'Message sent successfully!';
-            statusMessage.style.color = '#4CAF50';
-            contactForm.reset();
-
-            // Optional: Close overlay after success
-            setTimeout(() => {
-                const overlay = document.getElementById('infoOverlay');
-                overlay.classList.remove('active');
-                statusMessage.textContent = '';
-            }, 2000);
-
-        } catch (error) {
-            console.error('Error:', error);
-            statusMessage.textContent = 'Failed to send message. Please try again.';
-            statusMessage.style.color = '#f44336';
-        } finally {
-            submitButton.textContent = 'Send Message';
-            submitButton.disabled = false;
-        }
-    });
 });
